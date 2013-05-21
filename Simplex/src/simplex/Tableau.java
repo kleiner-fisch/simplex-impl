@@ -68,18 +68,16 @@ public class Tableau {
 		}
 		return sb.toString();
 	}
-	
-	private  List<Entry> getBasicVar(){
-		List<Entry> result = ArrayList<Entry>(rows.size());
+	/**
+	 * Returns the column vectors for the basic variables
+	 */
+	public  List<List<Entry>> getBasicVar(){
+		List<List<Entry>> result = new ArrayList<>(rows.size());
 		for(List<Entry> column : columns){
-			if(Util.isUnitVector(tableau[i]))
+			if(Util.isUnitVector(column))
 				result.add(column);
 		}
-		int[] result = new int[Util.nrOfRows(tableau)];
-		int counter = 0;
-		for(int i = 0;i < tableau.length; i++){
-			
-		}
+		
 		return result;
 	}
 	
