@@ -8,7 +8,11 @@ public class Util {
 	 * Tests if two double are almost equal.
 	 */
 	public static boolean areEqual(double a, double b){
-		return Math.abs(a - b) < Util.EPSILON;
+		return Math.abs(a - b) < EPSILON;
+	}
+	
+	public static boolean smaller(double a, double b){
+		return b - a > EPSILON;
 	}
 
 	public final static double EPSILON = 0.0000001;

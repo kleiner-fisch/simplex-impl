@@ -75,5 +75,24 @@ public class Test {
 		t.checkSoundness();
 		fail("An exception should have been thrown");
 	}
+	@org.junit.Test
+	public void testAreEqual(){
+		assertTrue(Util.areEqual(1, 1));
+		assertTrue(Util.areEqual(0, 0));
+		
+		assertFalse(Util.areEqual(0.01, 0));
+		assertFalse(Util.areEqual(0, -0.01));
+	}
+	@org.junit.Test
+	public void testSmaller(){
+		assertFalse(Util.smaller(1, 1));
+		assertFalse(Util.smaller(0, 0));
+		
+		assertFalse(Util.smaller(0.01, 0));
+		assertFalse(Util.smaller(0, -0.01));
+		
+		assertTrue(Util.smaller(-0.01, 0));
+		assertTrue(Util.smaller(0, 0.01));
+	}
 
 }
