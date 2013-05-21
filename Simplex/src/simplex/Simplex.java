@@ -55,28 +55,6 @@ public class Simplex {
 	}
 	
 
-	public static void main(String[] args){
-		double[][] test = new double[2][3];
-		test[0][1] = 1;
-		test[1][0] = 2;
-		test[1][2] = 3;
-		Tableau tableau = new Tableau(test);
-		
-		System.out.println(tableau);
-		
-		tableau.transpose();
-		
-		System.out.println(tableau);
-//		print(test);
-				
-	}
 	
-	public static void print(int[][] array){
-		for(int[] innerArray : array ){
-			for(int i : innerArray){
-				System.out.print(i);
-			}
-			System.out.println();
-		}
-	}
+
 }
