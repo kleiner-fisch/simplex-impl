@@ -53,4 +53,14 @@ public class Tableau {
 	public void addMultiple(double multiplier, int toAdd, int addTo){
 		
 	}
+	/**
+	 * Checks the soundness of the current tableau. 
+	 * Makes sure, that we have the correct number of unitVectors (one for each basic variable)
+	 * and that the reduced cost of each basic variable 
+	 * is 0
+	 * 
+	 */
+	public void checkSoundness(){
+		
+	}
 }
