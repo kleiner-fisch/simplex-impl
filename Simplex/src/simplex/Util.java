@@ -38,23 +38,6 @@ public class Util {
 //		}
 //		return areEqual(sum, 1);
 //	}
-	/**
-	 * Tests if the given vector contains exactly one 1 and all other values are 0.
-	 * So it tests if the input vector is (0,...,0,1,0,..,0)
-	 */
-	public static boolean isUnitVector(List<Entry> vector){
-		boolean seenNotZero = false;
-		double sum = 0 ;
-		for(Entry e : vector){
-			if(seenNotZero && !Util.areEqual(e.v, 0)){
-				return false;
-			} else if( !Util.areEqual(e.v, 0)){
-				seenNotZero = true;
-			}
-			sum += e.v;
-		}
-		return areEqual(sum, 1);
-	}
 /**
  * Checks if the matrix m is not null, and has at least length 1 in both dimensions
  */

@@ -32,6 +32,30 @@ public class Tableau {
 	 *  - The cost is decreased by a change of basis represented in the tableau. 
 	 */
 	public PivotResult pivot (){
+		checkSoundness();
+		/* 
+		 * first we collect all variables with negative reduced costs.
+		 * If the list is empty we terminate, as we already have an optimal solution
+		 */
+		/*
+		 * Then we select one variable with index j with neg. reduced cost 
+		 * (to handle non-degenerate cases we may need some selection method)
+		 */
+		/*
+		 * Then if the j'th variable has column vector <= 0 the optimal cost is
+		 * -infinite and we terminate.
+		 */
+		/*
+		 * Then we compute the ratio x_{B(i)} / u_i for all columns i 
+		 * and select the element with the smallest ratio (decreases the costs the most). 
+		 */
+		/*
+		 * Then column i leaves the basis and column j enters it.
+		 */
+		/*
+		 * Make it such, that the column j has at row i ((j,i) is pivot element) 
+		 * a 1 and every else 0.
+		 */
 		return null;
 	}
 	/**
