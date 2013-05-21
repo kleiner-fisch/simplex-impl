@@ -42,21 +42,32 @@ public class Tableau {
 	public PivotResult pivot (){
 		checkSoundness();
 		/* 
-		 * first we collect all variables with negative reduced costs.
-		 * If the list is empty we terminate, as we already have an optimal solution
+		 * first find a variable with negative reduced costs.
+		 * If we do not find one, we already have an optimal solution
 		 */
-		/*
-		 * Then we select one variable with index j with neg. reduced cost 
-		 * (to handle non-degenerate cases we may need some selection method)
-		 */
+		int enteringVariable = Util.NOTHING;
+		for (int i = 0; i < tableau.length; i++) {
+			if(Util.smaller(tableau[i][0], 0)){
+				enteringVariable = i;
+				break;
+			}
+		}
+		if(enteringVariable == Util.NOTHING)
+			return PivotResult.OPTIMAL;
 		/*
 		 * Then if the j'th variable has column vector <= 0 the optimal cost is
 		 * -infinite and we terminate.
 		 */
+		if(Util.isNonPositive(tableau[enteringVariable]))
+			return PivotResult.INFINITE_COSTS;
+
 		/*
-		 * Then we compute the ratio x_{B(i)} / u_i for all columns i 
-		 * and select the element with the smallest ratio (decreases the costs the most). 
+		 * Then we collect all rows that have a ratio equal to the minRatio
+		 * And determine the lex-smallest of those rows.
 		 */
+		double minRatio = getMinRatio(enteringVariable);
+		List<Integer> minRatioRows = getMinRatioRows(minRatio, enteringVariable);
+		int lexSmallestRow = getLexSmallestRow(minRatioRows);
 		/*
 		 * Then column i leaves the basis and column j enters it.
 		 */
@@ -66,6 +77,57 @@ public class Tableau {
 		 */
 		return null;
 	}
+	/**
+	 * For a list of vectors decides which vector is the lexicographically
+	 * smallest vector
+	 */
+	public int getLexSmallestRow(List<Integer> indices){
+		for (int i = 1; i < nrOfColumns(); i++) {
+			double[] vector = new double[indices.size()];
+			/*
+			 * Create the columns to be compared
+			 */
+			for (int k = 0; k < indices.size(); k++) {
+				vector[k] = tableau[i][indices.get(k)];
+			}
+			List<Integer> smallest = Util.smallestIndices(vector);
+			if(smallest.size() == 1)
+				return indices.get(smallest.get(0));
+			else
+				indices = smallest;
+		}
+		throw new RuntimeException("Probably only reachable if the lex-smallest is not unique, which we do assume to be.");
+	}
+	
+	/**
+	 * Gets the rows that have the minRatio
+	 */
+	private List<Integer> getMinRatioRows(double minRatio, int pivotColumn) {
+		List<Integer> result = new ArrayList<>();
+		for (int i = 0; i < tableau[pivotColumn].length; i++) {
+			double currentRatio = tableau[0][i] / tableau[pivotColumn][i];
+			if(Util.areEqual(currentRatio, minRatio))
+				result.add(i);
+		}
+		return result;
+	}
+
+
+	/**
+	 * Calculates the minimum ratio x_{B(i)} / u_i for all rows i and the given column
+	 * note that <code>x_{B(i)} = tableau[0][i]</code> 
+	 * and <code>u_i = tableau[0][pivotColumn]</code>   
+	 */
+	public double getMinRatio(int pivotColumn){
+		double minRatio = Double.NaN;
+		for (int i = 0; i < tableau[pivotColumn].length; i++) {
+			double currentRatio = tableau[0][i] / tableau[pivotColumn][i];
+			if(Util.smaller(currentRatio, minRatio))
+				minRatio = currentRatio;
+		}
+		return minRatio;
+	}
+	
 	/**
 	 * Multiplies the defined the row by a constant
 	 * @param multiplier the constant to multiply the row by

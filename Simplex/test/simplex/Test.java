@@ -1,11 +1,11 @@
 package simplex;
-import static org.junit.Assert.*;
-import org.junit.*;
-import org.junit.experimental.categories.Categories.ExcludeCategory;
-import org.omg.PortableInterceptor.SUCCESSFUL;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-import simplex.Tableau;
-import simplex.Util;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class Test {
@@ -99,6 +99,129 @@ public class Test {
 		assertFalse(Util.areEqual(0.01, 0));
 		assertFalse(Util.areEqual(0, -0.01));
 	}
+	
+	@org.junit.Test
+	public void testGetSmallestIndices1(){
+		double[] vector = {-1,0,0};
+		
+		List<Integer> expectedIndices = new ArrayList<>();
+		expectedIndices.add(0);
+		
+		assertEquals("The smallest is the 1st", Util.smallestIndices(vector), expectedIndices);
+	}
+	@org.junit.Test
+	public void testGetSmallestIndices2(){
+		double[] vector = {-1,-1,0};
+		
+		List<Integer> expectedIndices = new ArrayList<>();
+		expectedIndices.add(0);
+		expectedIndices.add(1);
+		
+		assertEquals("The smallest are the 1st and 2nd", Util.smallestIndices(vector), expectedIndices);
+	}
+	
+	@org.junit.Test
+	public void testGetSmallestIndices3(){
+		double[] vector = {0,0,0};
+		
+		List<Integer> expectedIndices = new ArrayList<>();
+		expectedIndices.add(0);
+		expectedIndices.add(1);
+		expectedIndices.add(2);
+		
+		assertEquals("The smallest indices are all", Util.smallestIndices(vector), expectedIndices);
+	}
+	
+	@org.junit.Test
+	public void testGetSmallestValue1(){
+		double[] vector = {-1,0,0};
+		assertEquals("The smallest value is -1", Util.getSmallestValue(vector), -1, Util.EPSILON);
+	}
+	@org.junit.Test
+	public void testGetSmallestValue2(){
+		double[] vector = {-2,-2,0};
+		assertEquals("There is no smallest", Util.getSmallestValue(vector), -2, Util.EPSILON);
+	}
+	@org.junit.Test
+	public void testGetSmallestValue3(){
+		double[] vector = {1,-1,-2};
+		assertEquals("The smallest is the 3rd", Util.getSmallestValue(vector), -2, Util.EPSILON);
+	}
+	
+	@org.junit.Test
+	public void testGetLexSmallestRow1(){
+		double[][] tableau = {{1,1,1,1}, {1,1,0,0}, {0,0,1,0}, {0,0,0,1}};
+		tableau = Util.transpose(tableau);
+		Tableau t = new Tableau(tableau);
+		
+		List<Integer> participatingRows = new ArrayList<>();
+		participatingRows.add(0);
+		participatingRows.add(1);
+		participatingRows.add(2);
+		participatingRows.add(3);
+		
+		assertEquals("Lex smallest row is the 4th", 3, t.getLexSmallestRow(participatingRows));
+	}
+	
+	@org.junit.Test
+	public void testGetLexSmallestRow2(){
+		double[][] tableau = {{1,1,1,1}, {1,1,0,-1}, {0,0,1,0}, {0,0,0,1}};
+		tableau = Util.transpose(tableau);
+		Tableau t = new Tableau(tableau);
+		
+		List<Integer> participatingRows = new ArrayList<>();
+		participatingRows.add(0);
+		participatingRows.add(1);
+		participatingRows.add(2);
+		participatingRows.add(3);
+		
+		assertEquals("Lex smallest row is the 4th", 3, t.getLexSmallestRow(participatingRows));
+	}
+	
+	@org.junit.Test
+	public void testGetLexSmallestRow3(){
+		double[][] tableau = {{1,0,1}, {1,1,0}, {1,0,0}};
+		tableau = Util.transpose(tableau);
+		Tableau t = new Tableau(tableau);
+		
+		List<Integer> participatingRows = new ArrayList<>();
+		participatingRows.add(0);
+		participatingRows.add(1);
+		participatingRows.add(2);
+		
+		assertEquals("Lex smallest row is the 3rd", 2, t.getLexSmallestRow(participatingRows));
+	}
+	
+	@org.junit.Test
+	public void testGetLexSmallestRow4(){
+		double[][] tableau = {{1,-1,1,1}, {1,1,0,-2}, {1,0,1,0}, {1,1,0,1}};
+		tableau = Util.transpose(tableau);
+		Tableau t = new Tableau(tableau);
+		
+		List<Integer> participatingRows = new ArrayList<>();
+		participatingRows.add(1);
+		participatingRows.add(2);
+		participatingRows.add(3);
+		
+		assertEquals("Lex smallest row is the 3rd as the 1st does not participate",
+				2, t.getLexSmallestRow(participatingRows));
+	}
+	
+	@org.junit.Test
+	public void testGetLexSmallestRow5(){
+		double[][] tableau = {{1,-1,1,1}, {1,0,0,-2}, {1,0,1,0}, {1,1,0,1}};
+		tableau = Util.transpose(tableau);
+		Tableau t = new Tableau(tableau);
+		
+		List<Integer> participatingRows = new ArrayList<>();
+		
+		participatingRows.add(1);
+		participatingRows.add(2);
+		
+		assertEquals("Lex smallest row is the 2nd as the 1st does not participate",
+				1, t.getLexSmallestRow(participatingRows));
+	}
+	
 	@org.junit.Test
 	public void testSmaller(){
 		assertFalse(Util.smaller(1, 1));
@@ -143,5 +266,5 @@ public class Test {
 		assertFalse(Util.geq(-0.01, 0));
 		assertFalse(Util.geq(0, 0.01));
 	}
-	
+
 }
