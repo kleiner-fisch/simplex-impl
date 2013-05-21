@@ -39,10 +39,10 @@ public class Util {
 	public static void checkIsMatrix(double[][] m) {
 		checkNotIsNull(m);
 		
-		if(m.length > 0)
+		if(m.length == 0)
 			throw new IllegalArgumentException("Array must have at least 1 column!");
 		
-		if(m[0].length > 0)
+		if(m[0].length == 0)
 			throw new IllegalArgumentException("Array must have at least 1 row!");
 	}
 	/**
