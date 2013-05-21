@@ -1,3 +1,4 @@
+package simplex;
 import static org.junit.Assert.*;
 import org.junit.*;
 import org.junit.experimental.categories.Categories.ExcludeCategory;
