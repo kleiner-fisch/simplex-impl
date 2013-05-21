@@ -63,7 +63,25 @@ public class Util {
 		if(m == null)
 			throw new IllegalArgumentException("Array mustn ot be null!");
 	}
+	/**
+	 * Tests if every element of the vector is >= 0
+	 */
+	public static boolean isNonPositive(double[] vector){
+		for(double v : vector){
+			if(greater(v, 0))
+				return false;
+		}
+		return true;
+	}
 	
-	
+	public static boolean geq (double a, double b){
+		return !smaller(a,b);
+	}
+	public static boolean leq (double a, double b){
+		return geq(b, a);
+	}
+	public static boolean greater(double a, double b){
+		return smaller(b, a);
+	}
 
 }
