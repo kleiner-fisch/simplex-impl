@@ -17,6 +17,10 @@ import java.util.List;
 public class Tableau {
 	public double[][] tableau;
 	
+	public Tableau(double[][] tableau){
+		this.tableau = tableau;
+	}
+	
 	
 	public void print(){
 		for(double[] innerArray : tableau ){
