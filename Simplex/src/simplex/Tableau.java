@@ -1,5 +1,9 @@
 package simplex;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+
 /**
  * Data class to hold tableaus.
  * If we have an array 
@@ -64,7 +68,7 @@ public class Tableau {
 	 * @param row the row to multiply
 	 */
 	public void multiplyBy(double multiplier, int row){
-		
+		addMultiple(multiplier, row, row);
 	}
 	/**
 	 * Adds a multiplicative of a row to another row.
@@ -75,7 +79,9 @@ public class Tableau {
 	 * @param addTo the row which should be changed
 	 */
 	public void addMultiple(double multiplier, int toAdd, int addTo){
-		
+		for(int i = 0; i < nrOfColumns(); i++){
+			tableau[i][addTo] = tableau[i][toAdd] * multiplier; 
+		}
 	}
 	/**
 	 * Checks the soundness of the current tableau. 
@@ -85,6 +91,40 @@ public class Tableau {
 	 * 
 	 */
 	public void checkSoundness(){
+		Util.checkIsMatrix(tableau);
 		
+		/*
+		 * This part ensures there are m linear independent unit vectors.
+		 * m is the (number of rows - 1) in the tableau
+		 */
+		List<Integer> indices = new ArrayList<>(nrOfColumns() - 1);
+		/*
+		 * First we calculate the nr of unitVectors and store the position of the 1s
+		 * Note that we start from 1 cause the first row and first column are different 
+		 */
+		for (int i = 1; i < nrOfColumns(); i++) {
+			if(Util.isUnitVector(tableau[i]) >= 0){
+				indices.add(Util.isUnitVector(tableau[i]));
+				
+				if(!Util.areEqual(tableau[i][0], 0))
+					throw new IllegalArgumentException(
+							"The reduced costs of the basic varaibles have to be 0!");
+			}
+		}
+		if(indices.size() != nrOfColumns() -1)
+			throw new IllegalArgumentException("Tableau should have m basic variables!");
+		/*
+		 * Now we ensure that the unit-vectors are linearly independend (no two are equal)
+		 */
+		if(indices.size() != new HashSet<Integer>(indices).size())
+			throw new IllegalArgumentException("There are some unitvectors that have 1 at the same position!");
+	}
+	
+	public int nrOfColumns(){
+		return tableau[0].length;
+}
+
+	public int nrOfRows(double[][] tableau){
+		return tableau.length;
 	}
 }
