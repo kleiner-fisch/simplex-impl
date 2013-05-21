@@ -48,6 +48,12 @@ public class Util {
 		
 		if(m[0].length == 0)
 			throw new IllegalArgumentException("Array must have at least 1 row!");
+		
+		for(double[] column : m){
+			if(column.length != m[0].length)
+				throw new IllegalArgumentException("All rows must have the same length!");	
+		}
+		
 	}
 	/**
 	 * Checks that the object object is not null and throws an expcetpion if it is.
