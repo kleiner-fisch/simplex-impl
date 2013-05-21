@@ -1,7 +1,5 @@
 package simplex;
 
-import java.util.ArrayList;
-import java.util.List;
 /**
  * Data class to hold tableaus.
  * If we have an array 
@@ -13,10 +11,10 @@ import java.util.List;
  *
  */
 public class Tableau {
-	public static double[][] tableau;
+	public double[][] tableau;
 	
 	
-	public static void print(){
+	public void print(){
 		for(double[] innerArray : tableau ){
 			for(double i : innerArray){
 				System.out.print(i);
@@ -25,6 +23,34 @@ public class Tableau {
 		}
 	}
 	
-	void pivot (){
+	public static enum PivotResult{OPTIMAL, INFINITE_COSTS, DECREASED}
+	/**
+	 * Performs a pivot operation. This means it tries to decrease te cost function.
+	 * The result can be 
+	 * 	- The tableau is optimal
+	 *  - The optimal cost is -infinity
+	 *  - The cost is decreased by a change of basis represented in the tableau. 
+	 */
+	public PivotResult pivot (){
+		return null;
+	}
+	/**
+	 * Multiplies the defined the row by a constant
+	 * @param multiplier the constant to multiply the row by
+	 * @param row the row to multiply
+	 */
+	public void multiplyBy(double multiplier, int row){
+		
+	}
+	/**
+	 * Adds a multiplicative of a row to another row.
+	 * Be careful that <code>toAdd = addTo</code> may be the case.
+	 * 
+	 * @param multiplier the constant to multiply <code>toAdd</code> by
+	 * @param toAdd the row to add to another row
+	 * @param addTo the row which should be changed
+	 */
+	public void addMultiple(double multiplier, int toAdd, int addTo){
+		
 	}
 }
