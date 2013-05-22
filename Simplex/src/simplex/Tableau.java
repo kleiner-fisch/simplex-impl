@@ -20,7 +20,7 @@ public class Tableau {
 	
 	public Tableau(double[][] tableau){
 		this.tableau = tableau;
-		checkSoundness();
+//		checkSoundness();
 	}
 	
 	
@@ -86,6 +86,8 @@ public class Tableau {
 	/**
 	 * For a list of vectors decides which vector is the lexicographically
 	 * smallest vector
+	 * 
+	 * @param indices the indices of the rows that participate in the comparison
 	 */
 	public int getLexSmallestRow(List<Integer> indices){
 		for (int i = 1; i < nrOfColumns(); i++) {
@@ -96,14 +98,20 @@ public class Tableau {
 			for (int k = 0; k < indices.size(); k++) {
 				vector[k] = tableau[i][indices.get(k)];
 			}
-			System.out.println("column: "+Arrays.toString(vector));
+//			System.out.println("column: "+Arrays.toString(vector));
 			
 			List<Integer> smallest = Util.smallestIndices(vector);
-			System.out.println("Smallets: "+smallest);
-			if(smallest.size() == 1)
+//			System.out.println("Smallets: "+smallest);
+			if(smallest.size() == 1){
 				return indices.get(smallest.get(0));
-			else
-				indices = smallest;
+			}else{
+				// we remove the non-smallest indices
+				List<Integer> indicesTmp = new ArrayList<Integer>();
+				for (Integer index : smallest) {
+					indicesTmp.add(indices.get(index));
+				}
+				indices = indicesTmp;
+			}
 		}
 		throw new RuntimeException("Probably only reachable if the lex-smallest is not unique, which we do assume to be.");
 	}
@@ -170,6 +178,9 @@ public class Tableau {
 	public void checkSoundness(){
 		Util.checkIsMatrix(tableau);
 		
+		if(nrOfRows() > nrOfColumns())
+			throw new IllegalArgumentException("The tableau has at most as many rows as it has columns!");
+		
 		/*
 		 * This part ensures there are m linear independent unit vectors.
 		 * m is the (number of rows - 1) in the tableau
@@ -196,12 +207,18 @@ public class Tableau {
 		if(indices.size() != new HashSet<Integer>(indices).size())
 			throw new IllegalArgumentException("There are some unitvectors that have 1 at the same position!");
 	}
-	
+	/**
+	 * For this tableau gets the column indices of the basic variables.
+	 * They have reduced cost = 0 and their column is a unit-vector. 
+	 */
+	public List<Integer> getBasicVariables(){
+		
+	}
 	public int nrOfColumns(){
 		return tableau[0].length;
 }
 
-	public int nrOfRows(double[][] tableau){
+	public int nrOfRows(){
 		return tableau.length;
 	}
 }

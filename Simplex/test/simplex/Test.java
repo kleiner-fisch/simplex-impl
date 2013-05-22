@@ -152,10 +152,15 @@ public class Test {
 	
 	@org.junit.Test
 	public void testGetLexSmallestRow1(){
-		double[][] tableau = {{1,0,0,0}, {0,1,0,0}, {0,0,1,0}, {0,0,0,1}};
-		tableau = Util.transpose(tableau);
+		double[][] tableau = 
+			{
+				{1,0,0,0}, 
+				{0,1,0,0}, 
+				{0,0,1,0}, 
+				{0,0,0,1}
+			};
+//		tableau = Util.transpose(tableau);
 		Tableau t = new Tableau(tableau);
-		t.print();
 		
 		List<Integer> participatingRows = new ArrayList<Integer>();
 		participatingRows.add(1);
@@ -167,22 +172,33 @@ public class Test {
 	
 	@org.junit.Test
 	public void testGetLexSmallestRow2(){
-		double[][] tableau = {{1,1,1,1}, {1,1,0,-1}, {0,0,1,0}, {0,0,0,1}};
-		tableau = Util.transpose(tableau);
+		double[][] tableau = 
+			{
+				{0,0,0,0,0},
+				{1,1,0,1,0}, 
+				{1,1,0,0,1}, 
+				{0,0,1,0,0},
+			};
+//		tableau = Util.transpose(tableau);
 		Tableau t = new Tableau(tableau);
+		t.print();
 		
 		List<Integer> participatingRows = new ArrayList<Integer>();
-		participatingRows.add(0);
 		participatingRows.add(1);
 		participatingRows.add(2);
 		participatingRows.add(3);
 		
-		assertEquals("Lex smallest row is the 4th", 3, t.getLexSmallestRow(participatingRows));
+		assertEquals("Lex smallest row is the 3rd", 2, t.getLexSmallestRow(participatingRows));
 	}
 	
 	@org.junit.Test
 	public void testGetLexSmallestRow3(){
-		double[][] tableau = {{1,0,1}, {1,1,0}, {1,0,0}};
+		double[][] tableau = 
+			{
+				{1,0,1}, 
+				{1,1,0}, 
+				{1,0,0}
+			};
 		tableau = Util.transpose(tableau);
 		Tableau t = new Tableau(tableau);
 		
@@ -196,7 +212,13 @@ public class Test {
 	
 	@org.junit.Test
 	public void testGetLexSmallestRow4(){
-		double[][] tableau = {{1,-1,1,1}, {1,1,0,-2}, {1,0,1,0}, {1,1,0,1}};
+		double[][] tableau = 
+			{
+				{1,-1,1,1}, 
+				{1,1,0,-2}, 
+				{1,0,1,0}, 
+				{1,1,0,1}
+			};
 		tableau = Util.transpose(tableau);
 		Tableau t = new Tableau(tableau);
 		
@@ -279,7 +301,7 @@ public class Test {
 				{2,0,4,0,-3,0,0,1,-3},
 				{1/3, 0,0,1, 1/3, 0,0,0,1/3}
 			};
-		tableauArray = Util.transpose(tableauArray);
+//		tableauArray = Util.transpose(tableauArray);
 		Tableau tableau = new Tableau(tableauArray);
 		
 		assertEquals("Taken from book p. 115, top tableua",
