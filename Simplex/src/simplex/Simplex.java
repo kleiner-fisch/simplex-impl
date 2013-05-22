@@ -11,10 +11,10 @@ public class Simplex {
 	public void test()
 	{
 		
-//		tabuleau = Util.transpose(tabuleau);
+		tabuleau = Util.transpose(tabuleau);
 		Tableau tabl = new Tableau(tabuleau);
 		int i = 0;
-		tabl.print();
+		System.out.println(tabl);
 		
 			/*Check for negative reduced cost */
 			
