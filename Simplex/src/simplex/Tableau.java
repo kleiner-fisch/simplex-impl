@@ -1,6 +1,7 @@
 package simplex;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
@@ -26,7 +27,7 @@ public class Tableau {
 	public void print(){
 		for(double[] innerArray : tableau ){
 			for(double i : innerArray){
-				System.out.print(i);
+				System.out.print(i+" ");
 			}
 			System.out.println();
 		}
@@ -95,7 +96,10 @@ public class Tableau {
 			for (int k = 0; k < indices.size(); k++) {
 				vector[k] = tableau[i][indices.get(k)];
 			}
+			System.out.println("column: "+Arrays.toString(vector));
+			
 			List<Integer> smallest = Util.smallestIndices(vector);
+			System.out.println("Smallets: "+smallest);
 			if(smallest.size() == 1)
 				return indices.get(smallest.get(0));
 			else
@@ -108,7 +112,7 @@ public class Tableau {
 	 * Gets the rows that have the minRatio
 	 */
 	private List<Integer> getMinRatioRows(double minRatio, int pivotColumn) {
-		List<Integer> result = new ArrayList<>();
+		List<Integer> result = new ArrayList<Integer>();
 		for (int i = 0; i < tableau[pivotColumn].length; i++) {
 			double currentRatio = tableau[0][i] / tableau[pivotColumn][i];
 			if(Util.areEqual(currentRatio, minRatio))
@@ -170,7 +174,7 @@ public class Tableau {
 		 * This part ensures there are m linear independent unit vectors.
 		 * m is the (number of rows - 1) in the tableau
 		 */
-		List<Integer> indices = new ArrayList<>(nrOfColumns() - 1);
+		List<Integer> indices = new ArrayList<Integer>(nrOfColumns() - 1);
 		/*
 		 * First we calculate the nr of unitVectors and store the position of the 1s
 		 * Note that we start from 1 cause the first row and first column are different 

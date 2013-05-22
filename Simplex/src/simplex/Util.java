@@ -61,6 +61,7 @@ public class Util {
 	 * Takes a matrix and creates a new transposed version of it
 	 */
 	public static double[][] transpose(double[][]  m){
+		checkIsMatrix(m);
 		Util.checkIsMatrix(m);
 		double[][] result = new double[m[0].length][m.length];
 		for (int i = 0; i < result.length; i++) {
@@ -112,7 +113,7 @@ public class Util {
 	 */
 	public static List<Integer> smallestIndices(double[] values){
 		double min = getSmallestValue(values);
-		List<Integer> result = new ArrayList<>();
+		List<Integer> result = new ArrayList<Integer>();
 		
 		for (int i = 0; i < values.length; i++) {
 			if(areEqual(values[i], min))

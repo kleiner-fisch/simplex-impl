@@ -7,6 +7,8 @@ import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.List;
 
+import simplex.Tableau.PivotResult;
+
 
 public class Test {
 
@@ -104,7 +106,7 @@ public class Test {
 	public void testGetSmallestIndices1(){
 		double[] vector = {-1,0,0};
 		
-		List<Integer> expectedIndices = new ArrayList<>();
+		List<Integer> expectedIndices = new ArrayList<Integer>();
 		expectedIndices.add(0);
 		
 		assertEquals("The smallest is the 1st", Util.smallestIndices(vector), expectedIndices);
@@ -113,7 +115,7 @@ public class Test {
 	public void testGetSmallestIndices2(){
 		double[] vector = {-1,-1,0};
 		
-		List<Integer> expectedIndices = new ArrayList<>();
+		List<Integer> expectedIndices = new ArrayList<Integer>();
 		expectedIndices.add(0);
 		expectedIndices.add(1);
 		
@@ -124,7 +126,7 @@ public class Test {
 	public void testGetSmallestIndices3(){
 		double[] vector = {0,0,0};
 		
-		List<Integer> expectedIndices = new ArrayList<>();
+		List<Integer> expectedIndices = new ArrayList<Integer>();
 		expectedIndices.add(0);
 		expectedIndices.add(1);
 		expectedIndices.add(2);
@@ -150,12 +152,12 @@ public class Test {
 	
 	@org.junit.Test
 	public void testGetLexSmallestRow1(){
-		double[][] tableau = {{1,1,1,1}, {1,1,0,0}, {0,0,1,0}, {0,0,0,1}};
+		double[][] tableau = {{1,0,0,0}, {0,1,0,0}, {0,0,1,0}, {0,0,0,1}};
 		tableau = Util.transpose(tableau);
 		Tableau t = new Tableau(tableau);
+		t.print();
 		
-		List<Integer> participatingRows = new ArrayList<>();
-		participatingRows.add(0);
+		List<Integer> participatingRows = new ArrayList<Integer>();
 		participatingRows.add(1);
 		participatingRows.add(2);
 		participatingRows.add(3);
@@ -169,7 +171,7 @@ public class Test {
 		tableau = Util.transpose(tableau);
 		Tableau t = new Tableau(tableau);
 		
-		List<Integer> participatingRows = new ArrayList<>();
+		List<Integer> participatingRows = new ArrayList<Integer>();
 		participatingRows.add(0);
 		participatingRows.add(1);
 		participatingRows.add(2);
@@ -184,7 +186,7 @@ public class Test {
 		tableau = Util.transpose(tableau);
 		Tableau t = new Tableau(tableau);
 		
-		List<Integer> participatingRows = new ArrayList<>();
+		List<Integer> participatingRows = new ArrayList<Integer>();
 		participatingRows.add(0);
 		participatingRows.add(1);
 		participatingRows.add(2);
@@ -198,7 +200,7 @@ public class Test {
 		tableau = Util.transpose(tableau);
 		Tableau t = new Tableau(tableau);
 		
-		List<Integer> participatingRows = new ArrayList<>();
+		List<Integer> participatingRows = new ArrayList<Integer>();
 		participatingRows.add(1);
 		participatingRows.add(2);
 		participatingRows.add(3);
@@ -213,7 +215,7 @@ public class Test {
 		tableau = Util.transpose(tableau);
 		Tableau t = new Tableau(tableau);
 		
-		List<Integer> participatingRows = new ArrayList<>();
+		List<Integer> participatingRows = new ArrayList<Integer>();
 		
 		participatingRows.add(1);
 		participatingRows.add(2);
@@ -267,4 +269,32 @@ public class Test {
 		assertFalse(Util.geq(0, 0.01));
 	}
 
+	@org.junit.Test
+	public void testPivot1(){
+		double[][] tableauArray = 
+			{
+				{-4,0,-8,0,6,0,0,0,7},
+				{2,1,2,0,-1,1,0,0,-1},
+				{0,-1,2,0,-2,0,1,0,-2},
+				{2,0,4,0,-3,0,0,1,-3},
+				{1/3, 0,0,1, 1/3, 0,0,0,1/3}
+			};
+		tableauArray = Util.transpose(tableauArray);
+		Tableau tableau = new Tableau(tableauArray);
+		
+		assertEquals("Taken from book p. 115, top tableua",
+				PivotResult.BASIS_CHANGED,tableau.pivot());
+		
+		double[][] expectedResultArray = 
+			{
+				{-4, -4, 0, 0, -2, 0, 4, 0, -1},
+				{2, 2, 0, 0, 1, 1, -1, 0, 1},
+				{0, 1/2, 1, 0, -1, 0, 1/2, 0, -1},
+				{2, 2, 0, 0, 1, 0, -2, 1, 1},
+				{1/3, 0, 0, 1, 1/3, 0, 0, 0, 1/3}
+			};
+		Tableau expectedTableau = new Tableau(expectedResultArray);
+		
+		assertEquals("Taken from book p. 115, middle tableua", expectedResultArray, tableau);
+	}
 }
