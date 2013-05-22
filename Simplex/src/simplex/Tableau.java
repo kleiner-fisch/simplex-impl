@@ -18,14 +18,21 @@ import java.util.Random;
  */
 public class Tableau {
 	public double[][] tableau;
-	
+	/**
+	 * Indicates the result of one pivot operation 
+	 */
 	public static enum PivotResult{OPTIMAL_ACHIEVED, INFINITE_OPTIMUM, BASIS_CHANGED}
+	/**
+	 * Indicates what kind of optimal solution the LP has 
+	 */
+	public static enum SimplexResult{FINITE_OPTIMUM, INFINITE_OPTIMUM, INFEASABLE}
 	
 	public PivotResult status;
+	public SimplexResult result;
 	/**
 	 * Counts the number of pivot operations done on this tableau.
 	 */
-	public int counter =0;
+	public int pivotCounter =0;
 	
 	public Tableau(double[][] tableau){
 		this.tableau = tableau;
@@ -71,7 +78,7 @@ public class Tableau {
 	 */
 	public void pivot (){
 		checkSoundness();
-		counter++;
+		pivotCounter++;
 		/* 
 		 * first find a variable with negative reduced costs.
 		 * If we do not find one, we already have an optimal solution
