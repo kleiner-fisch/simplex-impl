@@ -25,12 +25,18 @@ public class Tableau {
 	
 	
 	public void print(){
-		for(double[] innerArray : tableau ){
-			for(double i : innerArray){
-				System.out.print(i+" ");
+		for (int k = 0; k < nrOfRows(); k++) {
+			for (int i = 0; i < nrOfColumns(); i++) {
+				System.out.print(tableau[i][k] + " ");
 			}
 			System.out.println();
 		}
+//		for(double[] innerArray : tableau ){
+//			for(double i : innerArray){
+//				System.out.print(i+" ");
+//			}
+//			System.out.println();
+//		}
 	}
 	
 	public static enum PivotResult{OPTIMAL, INFINITE_COSTS, BASIS_CHANGED}
@@ -82,6 +88,12 @@ public class Tableau {
 			}
 		}
 		return PivotResult.BASIS_CHANGED;
+	}
+	/**
+	 * Turns the column into a unit vector, where the first entry is 0. 
+	 */
+	public void turnIntoUnitVector(int column, int row){
+		// TODO
 	}
 	/**
 	 * For a list of vectors decides which vector is the lexicographically
@@ -224,10 +236,10 @@ public class Tableau {
 		}
 	}
 	public int nrOfColumns(){
-		return tableau[0].length;
+		return tableau.length;
 }
 
 	public int nrOfRows(){
-		return tableau.length;
+		return tableau[0].length;
 	}
 }
