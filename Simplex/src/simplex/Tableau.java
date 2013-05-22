@@ -20,25 +20,40 @@ public class Tableau {
 	
 	public Tableau(double[][] tableau){
 		this.tableau = tableau;
-//		checkSoundness();
 	}
 	
-	
-	public void print(){
+	@Override
+	public String toString(){
+		StringBuilder sb = new StringBuilder();
 		for (int k = 0; k < nrOfRows(); k++) {
 			for (int i = 0; i < nrOfColumns(); i++) {
-				System.out.print(tableau[i][k] + " ");
+				sb.append(tableau[i][k] + "\t");
 			}
-			System.out.println();
+			sb.append("\n");
 		}
-//		for(double[] innerArray : tableau ){
-//			for(double i : innerArray){
-//				System.out.print(i+" ");
-//			}
-//			System.out.println();
-//		}
+		return sb.toString();
 	}
-	
+	@Override
+	public boolean equals(Object obj){
+	       if (obj == this) {
+	            return true;
+	        }
+	        if (obj == null || obj.getClass() != this.getClass()) {
+	            return false;
+	        }
+	        Tableau t = (Tableau) obj;
+	        if (t.nrOfColumns() != nrOfColumns() || t.nrOfRows() != nrOfRows()) 
+	        	return false;
+	        
+	        for (int k = 0; k < nrOfRows(); k++) {
+				for (int i = 0; i < nrOfColumns(); i++) {
+					if(! Util.areEqual(t.tableau[i][k], tableau[i][k]))
+						return false;
+				}
+	        }
+		return true;
+		
+	}
 	public static enum PivotResult{OPTIMAL, INFINITE_COSTS, BASIS_CHANGED}
 	/**
 	 * Performs a pivot operation. This means it tries to decrease te cost function.
@@ -54,7 +69,7 @@ public class Tableau {
 		 * If we do not find one, we already have an optimal solution
 		 */
 		int enteringVariable = Util.NOTHING;
-		for (int i = 0; i < tableau.length; i++) {
+		for (int i = 1; i < nrOfColumns(); i++) {
 			if(Util.smaller(tableau[i][0], 0)){
 				enteringVariable = i;
 				break;
@@ -76,24 +91,30 @@ public class Tableau {
 		double minRatio = getMinRatio(enteringVariable);
 		List<Integer> minRatioRows = getMinRatioRows(minRatio, enteringVariable);
 		int leavingVariable = getLexSmallestRow(minRatioRows);
+		changeBasis(leavingVariable, enteringVariable);
+		
+		return PivotResult.BASIS_CHANGED;
+	}
+	/**
+	 * Turns the given column into a unit-vector (with first element of column = 0),
+	 * and the 1 at the row'th position. For this row-operations are used.
+	 * 
+	 * @param column defines together with <code>row</code> the pivpt element
+	 */
+	public void changeBasis(int pivotX, int pivotY){
 		/*
 		 * Then column i leaves the basis and column j enters it.
 		 * Make it such, that the column j has at row i ((j,i) is pivot element) 
 		 * a 1 and every else 0.
 		 */
-		multiplyBy(1 / tableau[enteringVariable][leavingVariable], leavingVariable);
-		for (int row = 0; row < nrOfColumns(); row++) {
-			if(row != leavingVariable){
-				addMultiple(-tableau[enteringVariable][row], leavingVariable, row);
+		multiplyBy(1 / tableau[pivotX][pivotY], pivotY);
+//		System.out.println(toString());
+		for (int row = 0; row < nrOfRows(); row++) {
+			if(row != pivotY){
+				addMultiple(-tableau[pivotX][row], pivotY, row);
 			}
+//			System.out.println(toString());
 		}
-		return PivotResult.BASIS_CHANGED;
-	}
-	/**
-	 * Turns the column into a unit vector, where the first entry is 0. 
-	 */
-	public void turnIntoUnitVector(int column, int row){
-		// TODO
 	}
 	/**
 	 * For a list of vectors decides which vector is the lexicographically
@@ -110,10 +131,10 @@ public class Tableau {
 			for (int k = 0; k < indices.size(); k++) {
 				vector[k] = tableau[i][indices.get(k)];
 			}
-//			System.out.println("column: "+Arrays.toString(vector));
-			
+			System.out.println("column: "+Arrays.toString(vector));
+			System.out.println("indices: "+indices);
 			List<Integer> smallest = Util.smallestIndices(vector);
-//			System.out.println("Smallets: "+smallest);
+			System.out.println("Smallets: "+smallest);
 			if(smallest.size() == 1){
 				return indices.get(smallest.get(0));
 			}else{
@@ -143,16 +164,19 @@ public class Tableau {
 
 
 	/**
-	 * Calculates the minimum ratio x_{B(i)} / u_i for all rows i and the given column
+	 * Calculates the minimum ratio x_{B(i)} / u_i for all rows i where u_i > 0 
+	 * and the given column.
 	 * note that <code>x_{B(i)} = tableau[0][i]</code> 
 	 * and <code>u_i = tableau[0][pivotColumn]</code>   
 	 */
 	private double getMinRatio(int pivotColumn){
-		double minRatio = Double.NaN;
-		for (int i = 0; i < tableau[pivotColumn].length; i++) {
-			double currentRatio = tableau[0][i] / tableau[pivotColumn][i];
-			if(Util.smaller(currentRatio, minRatio))
-				minRatio = currentRatio;
+		double minRatio = Double.POSITIVE_INFINITY;
+		for (int i = 1; i < nrOfRows(); i++) {
+			if(Util.greater(tableau[pivotColumn][i],0)){
+				double currentRatio = tableau[0][i] / tableau[pivotColumn][i];
+				if(Util.smaller(currentRatio, minRatio))
+					minRatio = currentRatio;
+			}
 		}
 		return minRatio;
 	}
@@ -163,7 +187,9 @@ public class Tableau {
 	 * @param row the row to multiply
 	 */
 	public void multiplyBy(double multiplier, int row){
-		addMultiple(multiplier, row, row);
+		for(int i = 0; i < nrOfColumns(); i++){
+			tableau[i][row] *= multiplier;
+		}
 	}
 	/**
 	 * Adds a multiplicative of a row to another row.
@@ -200,8 +226,9 @@ public class Tableau {
 		List<Integer> indices = getBasicVariables();
 		checkUnitVectorsAreLinIndep(indices);
 		
-		if(indices.size() != nrOfColumns() -1)
-			throw new IllegalArgumentException("Tableau should have m basic variables!");
+		if(indices.size() != nrOfRows() -1)
+			throw new IllegalArgumentException("Tableau should have "+(nrOfRows() -1)+" basic variables!"+
+					"Actual nr of basic var: "+indices.size());
 		/*
 		 * Now we ensure that the unit-vectors are linearly independend (no two are equal)
 		 */

@@ -42,7 +42,7 @@ public class Util {
  * Checks if the matrix m is not null, and has at least length 1 in both dimensions
  */
 	public static void checkIsMatrix(double[][] m) {
-		checkNotIsNull(m);
+		checkIsNotNull(m);
 		
 		if(m.length == 0)
 			throw new IllegalArgumentException("Array must have at least 1 column!");
@@ -54,7 +54,6 @@ public class Util {
 			if(column.length != m[0].length)
 				throw new IllegalArgumentException("All rows must have the same length!");	
 		}
-		
 	}
 	
 	/**
@@ -76,7 +75,7 @@ public class Util {
 	 * Checks that the object object is not null and throws an expcetpion if it is.
 	 * @param m
 	 */
-	public static void checkNotIsNull(Object m) {
+	public static void checkIsNotNull(Object m) {
 		if(m == null)
 			throw new IllegalArgumentException("Array mustn ot be null!");
 	}
@@ -108,10 +107,12 @@ public class Util {
 //		}
 //		return result;
 //	}
+	
 	/**
 	 * Gets the indices of the smallest values.
 	 */
 	public static List<Integer> smallestIndices(double[] values){
+		isArray(values);
 		double min = getSmallestValue(values);
 		List<Integer> result = new ArrayList<Integer>();
 		
@@ -121,6 +122,12 @@ public class Util {
 		}
 		return result;
 	}
+	private static void isArray(double[] values) {
+		checkIsNotNull(values);
+		if(values.length <= 0)
+			throw new IllegalArgumentException("Array must have length > 0!");
+	}
+
 	/**
 	 * Gets the minimal element from an array of doubles
 	 */
