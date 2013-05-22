@@ -56,6 +56,18 @@ public class Tableau {
 	}
 	public static enum PivotResult{OPTIMAL, INFINITE_COSTS, BASIS_CHANGED}
 	/**
+	 * Calculates the smallest index s.t. the reduced costs are negative. 
+	 * If there is no negative redced costs returns NOTHING 
+	 */
+	private int getIndexOfFirstNegReducedCosts(){
+		for (int i = 1; i < nrOfColumns(); i++) {
+			if(Util.smaller(tableau[i][0], 0)){
+				return i;
+			}
+		}
+		return Util.NOTHING;
+	}
+	/**
 	 * Performs a pivot operation. This means it tries to decrease te cost function.
 	 * The result can be 
 	 * 	- The tableau is optimal
@@ -68,13 +80,7 @@ public class Tableau {
 		 * first find a variable with negative reduced costs.
 		 * If we do not find one, we already have an optimal solution
 		 */
-		int enteringVariable = Util.NOTHING;
-		for (int i = 1; i < nrOfColumns(); i++) {
-			if(Util.smaller(tableau[i][0], 0)){
-				enteringVariable = i;
-				break;
-			}
-		}
+		int enteringVariable = getIndexOfFirstNegReducedCosts();
 		if(enteringVariable == Util.NOTHING)
 			return PivotResult.OPTIMAL;
 		/*
@@ -89,9 +95,10 @@ public class Tableau {
 		 * And determine the lex-smallest of those rows.
 		 */
 		double minRatio = getMinRatio(enteringVariable);
-		List<Integer> minRatioRows = getMinRatioRows(minRatio, enteringVariable);
-		int leavingVariable = getLexSmallestRow(minRatioRows);
-		changeBasis(leavingVariable, enteringVariable);
+//		List<Integer> minRatioRows = getMinRatioRows(minRatio, enteringVariable);
+//		int leavingVariable = getLexSmallestRow(minRatioRows);
+		int leavingVariable = getSmallestIndexOfMinRatio(minRatio, enteringVariable);
+		changeBasis(enteringVariable, leavingVariable);
 		
 		return PivotResult.BASIS_CHANGED;
 	}
@@ -150,7 +157,7 @@ public class Tableau {
 	 */
 	private List<Integer> getMinRatioRows(double minRatio, int pivotColumn) {
 		List<Integer> result = new ArrayList<Integer>();
-		for (int i = 0; i < tableau[pivotColumn].length; i++) {
+		for (int i = 1; i < nrOfRows(); i++) {
 			double currentRatio = tableau[0][i] / tableau[pivotColumn][i];
 			if(Util.areEqual(currentRatio, minRatio))
 				result.add(i);
@@ -158,6 +165,18 @@ public class Tableau {
 		return result;
 	}
 
+	/**
+	 * Gets the rows that have the minRatio
+	 */
+	private int getSmallestIndexOfMinRatio(double minRatio, int pivotColumn) {
+		for (int i = 1; i < nrOfRows(); i++) {
+			double currentRatio = tableau[0][i] / tableau[pivotColumn][i];
+			if(Util.areEqual(currentRatio, minRatio))
+				return i;
+		}
+		throw new IllegalArgumentException("Is only reachable with illegal arguments.\n"+
+				"minRatio: "+minRatio + "\npivotColumn: "+pivotColumn);
+	}
 
 	/**
 	 * Calculates the minimum ratio x_{B(i)} / u_i for all rows i where u_i > 0 
