@@ -19,6 +19,7 @@ public class Tableau {
 	
 	public Tableau(double[][] tableau){
 		this.tableau = tableau;
+		checkSoundness();
 	}
 	
 	
@@ -31,7 +32,7 @@ public class Tableau {
 		}
 	}
 	
-	public static enum PivotResult{OPTIMAL, INFINITE_COSTS, DECREASED}
+	public static enum PivotResult{OPTIMAL, INFINITE_COSTS, BASIS_CHANGED}
 	/**
 	 * Performs a pivot operation. This means it tries to decrease te cost function.
 	 * The result can be 
@@ -67,15 +68,19 @@ public class Tableau {
 		 */
 		double minRatio = getMinRatio(enteringVariable);
 		List<Integer> minRatioRows = getMinRatioRows(minRatio, enteringVariable);
-		int lexSmallestRow = getLexSmallestRow(minRatioRows);
+		int leavingVariable = getLexSmallestRow(minRatioRows);
 		/*
 		 * Then column i leaves the basis and column j enters it.
-		 */
-		/*
 		 * Make it such, that the column j has at row i ((j,i) is pivot element) 
 		 * a 1 and every else 0.
 		 */
-		return null;
+		multiplyBy(1 / tableau[enteringVariable][leavingVariable], leavingVariable);
+		for (int row = 0; row < nrOfColumns(); row++) {
+			if(row != leavingVariable){
+				addMultiple(-tableau[enteringVariable][row], leavingVariable, row);
+			}
+		}
+		return PivotResult.BASIS_CHANGED;
 	}
 	/**
 	 * For a list of vectors decides which vector is the lexicographically
@@ -118,7 +123,7 @@ public class Tableau {
 	 * note that <code>x_{B(i)} = tableau[0][i]</code> 
 	 * and <code>u_i = tableau[0][pivotColumn]</code>   
 	 */
-	public double getMinRatio(int pivotColumn){
+	private double getMinRatio(int pivotColumn){
 		double minRatio = Double.NaN;
 		for (int i = 0; i < tableau[pivotColumn].length; i++) {
 			double currentRatio = tableau[0][i] / tableau[pivotColumn][i];
@@ -146,9 +151,11 @@ public class Tableau {
 	 */
 	public void addMultiple(double multiplier, int toAdd, int addTo){
 		for(int i = 0; i < nrOfColumns(); i++){
-			tableau[i][addTo] = tableau[i][toAdd] * multiplier; 
+			tableau[i][addTo] += tableau[i][toAdd] * multiplier; 
 		}
 	}
+	
+	
 	/**
 	 * Checks the soundness of the current tableau. 
 	 * Makes sure, that we have the correct number of unitVectors (one for each basic variable)
