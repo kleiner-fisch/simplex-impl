@@ -5,7 +5,10 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+import org.junit.Before;
 
 import simplex.Tableau.PivotResult;
 
@@ -305,7 +308,9 @@ public class Test {
 		
 		System.out.println("column "+t.nrOfColumns());
 		System.out.println("rows "+t.nrOfRows());
-		System.out.println(tableau[1][0]);
+		System.out.println(tableau[1][0]+"\n");
+		System.out.println(Arrays.toString(tableau[0]));
+		
 	}
 	
 	@org.junit.Test
@@ -337,31 +342,101 @@ public class Test {
 	
 	@org.junit.Test
 	public void testPivot1(){
-		double[][] tableauArray = 
-			{
-				{-4 ,0 ,-8,0,6,0 ,0,0  ,7  },
-				{2  ,1 ,2 ,0,-1  ,1,0,0,-1 },
-				{0  ,-1,2 ,0,-2,0,1,0  ,-2 },
-				{2  , 0,4 ,0,-3,0,0,1  ,-3 },
-				{1d/3d, 0, 0,1, 1d/3d,0,0,0,1d/3d}
-			};
-		tableauArray = Util.transpose(tableauArray);
+
+		double[][] tableauArray = page115_1st; 
+		tableauArray= Util.transpose(tableauArray);
 		Tableau tableau = new Tableau(tableauArray);
 		
 		assertEquals("Taken from book p. 115, top tableua",
 				PivotResult.BASIS_CHANGED,tableau.pivot());
 		
-		double[][] expectedResultArray = 
-			{
-				{-4, -4, 0, 0, -2, 0, 4, 0, -1},
-				{2, 2, 0, 0, 1, 1, -1, 0, 1},
-				{0, -1d/2d, 1, 0, -1, 0, 1d/2d, 0, -1},
-				{2, 2, 0, 0, 1, 0, -2, 1, 1},
-				{1d/3d, 0, 0, 1, 1d/3d, 0, 0, 0, 1d/3d}
-			};
+		double[][] expectedResultArray = page115_2nd;
 		expectedResultArray = Util.transpose(expectedResultArray);
 		Tableau expectedTableau = new Tableau(expectedResultArray);
 		
 		assertEquals("Taken from book p. 115, middle tableua", expectedTableau, tableau);
 	}
+	
+	@org.junit.Test
+	public void testPivot2(){
+		double[][] tableauArray = page115_2nd;
+		tableauArray = Util.transpose(tableauArray);
+		Tableau tableau = new Tableau(tableauArray);
+		
+		assertEquals("Taken from book p. 115, middle tableua",
+				PivotResult.BASIS_CHANGED,tableau.pivot());
+		
+		double[][] expectedResultArray = page115_3rd;
+		expectedResultArray = Util.transpose(expectedResultArray);
+		Tableau expectedTableau = new Tableau(expectedResultArray);
+		
+		assertEquals("Taken from book p. 115, bottom tableua", expectedTableau, tableau);
+	}
+	
+//	@org.junit.Test
+//	public void testPivot2(){
+//		double[][] tableauArray = 
+//			{
+//				{3 ,0 ,0,-2,18,1 ,1,0},
+//				{0,1,0,8,-84,-12,8,0},
+//				{0,0,1,3d/8d,-15d/4d,-1d/2,1d/4d,0},
+//				{1,0,0,1,0,0,0,1}
+//			};
+//		tableauArray = Util.transpose(tableauArray);
+//		Tableau tableau = new Tableau(tableauArray);
+//		tableau.checkSoundness();
+//		System.out.println(tableau);
+//		System.out.println();
+//		
+//		assertEquals("Taken from book p. 104",
+//				PivotResult.BASIS_CHANGED,tableau.pivot());
+//		System.out.println(tableau);
+//		System.out.println();
+//		
+//		double[][] expectedResultArray = 
+//			{
+//				{3,1d/4d,0,0,-3,-2,3,0},
+//				{0,1d/8d,0,1,-21d/2d,-3d/2d,1,0},
+//				{0,-3d/64d,1,0,3d/16d,1d/16d,-1d/8d,0},
+//				{1,-1d/8d,0,0,21d/2d,3d/2d,-1,1}
+//			};
+//		expectedResultArray = Util.transpose(expectedResultArray);
+//		Tableau expectedTableau = new Tableau(expectedResultArray);
+//		expectedTableau.checkSoundness();
+//		System.out.println(expectedTableau);
+//		System.out.println();
+//		
+//		assertEquals("Taken from book p. 104, middle tableua", expectedTableau, tableau);
+//	}
+	@Before
+	public void setup(){
+		
+	}
+	/**
+	 * These arrays are taken from the book
+	 */
+	public static final double[][] page115_1st = 
+		{
+			{-4 ,0 ,-8,0,6,0 ,0,0  ,7  },
+			{2  ,1 ,2 ,0,-1  ,1,0,0,-1 },
+			{0  ,-1,2 ,0,-2,0,1,0  ,-2 },
+			{2  , 0,4 ,0,-3,0,0,1  ,-3 },
+			{1d/3d, 0, 0,1, 1d/3d,0,0,0,1d/3d}
+		};
+	public static final double[][] page115_2nd = 
+		{
+			{-4, -4, 0, 0, -2, 0, 4, 0, -1},
+			{2, 2, 0, 0, 1, 1, -1, 0, 1},
+			{0, -1d/2d, 1, 0, -1, 0, 1d/2d, 0, -1},
+			{2, 2, 0, 0, 1, 0, -2, 1, 1},
+			{1d/3d, 0, 0, 1, 1d/3d, 0, 0, 0, 1d/3d}
+		};
+	public static final double[][] page115_3rd = 
+		{
+			{0, 0, 0, 0, 0, 2, 2, 0, 1},
+			{1, 1, 0, 0, 1d/2d, 1d/2d, -1d/2d, 0, 1d/2d},
+			{1d/2d, 0, 1, 0, -3d/4d, 1d/4d, 1d/4d, 0, -3d/4d},
+			{0, 0, 0, 0, 0, -1, -1, 1, 0},
+			{1d/3d, 0, 0, 1, 1d/3d, 0, 0, 0, 1d/3d}
+		};
 }
