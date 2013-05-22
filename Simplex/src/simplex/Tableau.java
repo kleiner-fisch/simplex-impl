@@ -18,6 +18,10 @@ import java.util.Random;
  */
 public class Tableau {
 	public double[][] tableau;
+	
+	public static enum PivotResult{OPTIMAL_ACHIEVED, INFINITE_OPTIMUM, BASIS_CHANGED}
+	
+	public PivotResult status;
 	/**
 	 * Counts the number of pivot operations done on this tableau.
 	 */
@@ -26,19 +30,7 @@ public class Tableau {
 	public Tableau(double[][] tableau){
 		this.tableau = tableau;
 	}
-	
-	@Override
-	public String toString(){
-		StringBuilder sb = new StringBuilder();
-		sb.append(nrOfRows() +" " + nrOfColumns()+ "\n");
-		for (int k = 0; k < nrOfRows(); k++) {
-			for (int i = 0; i < nrOfColumns(); i++) {
-				sb.append(tableau[i][k] + " ");
-			}
-			sb.append("\n");
-		}
-		return sb.toString();
-	}
+
 	/**
 	 * Creates a new random tableau with the specified properties.
 	 * 
@@ -57,28 +49,7 @@ public class Tableau {
 		}
 		return new Tableau(result);
 	}
-	@Override
-	public boolean equals(Object obj){
-	       if (obj == this) {
-	            return true;
-	        }
-	        if (obj == null || obj.getClass() != this.getClass()) {
-	            return false;
-	        }
-	        Tableau t = (Tableau) obj;
-	        if (t.nrOfColumns() != nrOfColumns() || t.nrOfRows() != nrOfRows()) 
-	        	return false;
-	        
-	        for (int k = 0; k < nrOfRows(); k++) {
-				for (int i = 0; i < nrOfColumns(); i++) {
-					if(! Util.areEqual(t.tableau[i][k], tableau[i][k]))
-						return false;
-				}
-	        }
-		return true;
-		
-	}
-	public static enum PivotResult{OPTIMAL, INFINITE_COSTS, BASIS_CHANGED}
+	
 	/**
 	 * Calculates the smallest index s.t. the reduced costs are negative. 
 	 * If there is no negative redced costs returns NOTHING 
@@ -98,7 +69,7 @@ public class Tableau {
 	 *  - The optimal cost is -infinity
 	 *  - The cost is decreased by a change of basis represented in the tableau. 
 	 */
-	public PivotResult pivot (){
+	public void pivot (){
 		checkSoundness();
 		counter++;
 		/* 
@@ -107,13 +78,13 @@ public class Tableau {
 		 */
 		int enteringVariable = getIndexOfFirstNegReducedCosts();
 		if(enteringVariable == Util.NOTHING)
-			return PivotResult.OPTIMAL;
+			status = PivotResult.OPTIMAL_ACHIEVED;
 		/*
 		 * Then if the j'th variable has column vector <= 0 the optimal cost is
 		 * -infinite and we terminate.
 		 */
 		if(Util.isNonPositive(tableau[enteringVariable]))
-			return PivotResult.INFINITE_COSTS;
+			status = PivotResult.INFINITE_OPTIMUM;
 
 		/*
 		 * Then we collect all rows that have a ratio equal to the minRatio
@@ -125,7 +96,7 @@ public class Tableau {
 		int leavingVariable = getSmallestIndexOfMinRatio(minRatio, enteringVariable);
 		changeBasis(enteringVariable, leavingVariable);
 		
-		return PivotResult.BASIS_CHANGED;
+		status = PivotResult.BASIS_CHANGED;
 	}
 	/**
 	 * Turns the given column into a unit-vector (with first element of column = 0),
@@ -308,5 +279,39 @@ public class Tableau {
 
 	public int nrOfRows(){
 		return tableau[0].length;
+	}
+	
+	@Override
+	public String toString(){
+		StringBuilder sb = new StringBuilder();
+		sb.append(nrOfRows() +" " + nrOfColumns()+ "\n");
+		for (int k = 0; k < nrOfRows(); k++) {
+			for (int i = 0; i < nrOfColumns(); i++) {
+				sb.append(tableau[i][k] + " ");
+			}
+			sb.append("\n");
+		}
+		return sb.toString();
+	}
+	
+	@Override
+	public boolean equals(Object obj){
+	       if (obj == this) {
+	            return true;
+	        }
+	        if (obj == null || obj.getClass() != this.getClass()) {
+	            return false;
+	        }
+	        Tableau t = (Tableau) obj;
+	        if (t.nrOfColumns() != nrOfColumns() || t.nrOfRows() != nrOfRows()) 
+	        	return false;
+	        
+	        for (int k = 0; k < nrOfRows(); k++) {
+				for (int i = 0; i < nrOfColumns(); i++) {
+					if(! Util.areEqual(t.tableau[i][k], tableau[i][k]))
+						return false;
+				}
+	        }
+		return true;
 	}
 }

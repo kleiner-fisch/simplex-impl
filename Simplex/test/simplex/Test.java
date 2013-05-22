@@ -347,8 +347,9 @@ public class Test {
 		tableauArray= Util.transpose(tableauArray);
 		Tableau tableau = new Tableau(tableauArray);
 		
+		tableau.pivot();
 		assertEquals("Taken from book p. 115, top tableua",
-				PivotResult.BASIS_CHANGED,tableau.pivot());
+				PivotResult.BASIS_CHANGED, tableau.status);
 		
 		double[][] expectedResultArray = page115_2nd;
 		expectedResultArray = Util.transpose(expectedResultArray);
@@ -363,8 +364,9 @@ public class Test {
 		tableauArray = Util.transpose(tableauArray);
 		Tableau tableau = new Tableau(tableauArray);
 		
+		tableau.pivot();
 		assertEquals("Taken from book p. 115, middle tableua",
-				PivotResult.BASIS_CHANGED,tableau.pivot());
+				PivotResult.BASIS_CHANGED, tableau.status);
 		
 		double[][] expectedResultArray = page115_3rd;
 		expectedResultArray = Util.transpose(expectedResultArray);
