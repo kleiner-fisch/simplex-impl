@@ -185,20 +185,9 @@ public class Tableau {
 		 * This part ensures there are m linear independent unit vectors.
 		 * m is the (number of rows - 1) in the tableau
 		 */
-		List<Integer> indices = new ArrayList<Integer>(nrOfColumns() - 1);
-		/*
-		 * First we calculate the nr of unitVectors and store the position of the 1s
-		 * Note that we start from 1 cause the first row and first column are different 
-		 */
-		for (int i = 1; i < nrOfColumns(); i++) {
-			if(Util.isUnitVector(tableau[i]) >= 0){
-				indices.add(Util.isUnitVector(tableau[i]));
-				
-				if(!Util.areEqual(tableau[i][0], 0))
-					throw new IllegalArgumentException(
-							"The reduced costs of the basic varaibles have to be 0!");
-			}
-		}
+		List<Integer> indices = getBasicVariables();
+		checkUnitVectorsAreLinIndep(indices);
+		
 		if(indices.size() != nrOfColumns() -1)
 			throw new IllegalArgumentException("Tableau should have m basic variables!");
 		/*
@@ -212,7 +201,27 @@ public class Tableau {
 	 * They have reduced cost = 0 and their column is a unit-vector. 
 	 */
 	public List<Integer> getBasicVariables(){
-		
+		List<Integer> indices = new ArrayList<Integer>();
+		for (int column = 1; column < nrOfColumns(); column++) {
+			int row = Util.isUnitVector(tableau[column]);
+			if( row >= 0 && Util.areEqual(tableau[column][0], 0)){
+				indices.add(column);
+			}
+		}
+		return indices;
+	}
+	/**
+	 * Verifies that the unit vectors in the indices are lineary independend
+	 * @param indices
+	 */
+	public void checkUnitVectorsAreLinIndep(List<Integer> indices){
+		List<Integer> tmp = new ArrayList<Integer>();
+		for (Integer column : indices) {
+			if(!tmp.contains(Util.isUnitVector(tableau[column])))
+				tmp.add(Util.isUnitVector(tableau[column]));
+			else
+				throw new IllegalArgumentException("Unit vectors are not lin. independend");
+		}
 	}
 	public int nrOfColumns(){
 		return tableau[0].length;
