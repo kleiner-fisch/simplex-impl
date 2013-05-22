@@ -16,7 +16,7 @@ public class Util {
 		return b - a > EPSILON;
 	}
 
-	public final static double EPSILON = 0.0000001;
+	public final static double EPSILON = 0.00001;
 
 	/**
 	 * Tests if the given vector contains exactly one 1 and all other values are 0.

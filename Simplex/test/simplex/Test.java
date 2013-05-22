@@ -181,7 +181,7 @@ public class Test {
 			};
 //		tableau = Util.transpose(tableau);
 		Tableau t = new Tableau(tableau);
-		t.print();
+		System.out.println(t.toString());
 		
 		List<Integer> participatingRows = new ArrayList<Integer>();
 		participatingRows.add(1);
@@ -292,16 +292,60 @@ public class Test {
 	}
 
 	@org.junit.Test
+	public void test1(){
+		double[][] tableau = 
+			{
+				{1,2,1,1}, 
+				{0,1,0,0}, 
+				{0,0,1,0} 
+			};
+		
+		tableau = Util.transpose(tableau);
+		Tableau t = new Tableau(tableau);
+		
+		System.out.println("column "+t.nrOfColumns());
+		System.out.println("rows "+t.nrOfRows());
+		System.out.println(tableau[1][0]);
+	}
+	
+	@org.junit.Test
+	public void testChangeBasis1(){
+		double[][] tableauArray = 
+			{
+				{120,0,-4,0,2,4,0},
+				{10,0,1.5,1,1,-0.5,0},
+				{0,1,-1,0,-1,1,0},
+				{10,0,2.5,0,1,-1.5,1},
+			};
+		tableauArray = Util.transpose(tableauArray);
+		Tableau tableau = new Tableau(tableauArray);
+		
+		double[][] expectedResultArray = 
+			{
+				{136,0,0,0,3.6,1.6,1.6},
+				{4,0,0,1,0.4,0.4,-0.6},
+				{4,1,0,0,-0.6,0.4,0.4},
+				{4,0,1,0,0.4,-0.6,0.4},
+			};
+		expectedResultArray = Util.transpose(expectedResultArray);
+		Tableau expectedTableau = new Tableau(expectedResultArray);
+		
+		tableau.changeBasis(2, 3);
+		
+		assertEquals("Taken from book p. 103, middle tableua", expectedTableau, tableau);
+	}
+	
+	@org.junit.Test
 	public void testPivot1(){
 		double[][] tableauArray = 
 			{
-				{-4,0,-8,0,6,0,0,0,7},
-				{2,1,2,0,-1,1,0,0,-1},
-				{0,-1,2,0,-2,0,1,0,-2},
-				{2,0,4,0,-3,0,0,1,-3},
-				{1/3, 0,0,1, 1/3, 0,0,0,1/3}
+				{-4 ,0 ,-8,0,6,0 ,0,0  ,7  },
+				{2  ,1 ,2 ,0,-1  ,1,0,0,-1 },
+				{0  ,-1,2 ,0,-2,0,1,0  ,-2 },
+				{2  , 0,4 ,0,-3,0,0,1  ,-3 },
+				{1d/3d, 0, 0,1, 1d/3d,0,0,0,1d/3d}
 			};
-//		tableauArray = Util.transpose(tableauArray);
+		tableauArray = Util.transpose(tableauArray);
 		Tableau tableau = new Tableau(tableauArray);
 		
 		assertEquals("Taken from book p. 115, top tableua",
@@ -311,12 +355,13 @@ public class Test {
 			{
 				{-4, -4, 0, 0, -2, 0, 4, 0, -1},
 				{2, 2, 0, 0, 1, 1, -1, 0, 1},
-				{0, 1/2, 1, 0, -1, 0, 1/2, 0, -1},
+				{0, -1d/2d, 1, 0, -1, 0, 1d/2d, 0, -1},
 				{2, 2, 0, 0, 1, 0, -2, 1, 1},
-				{1/3, 0, 0, 1, 1/3, 0, 0, 0, 1/3}
+				{1d/3d, 0, 0, 1, 1d/3d, 0, 0, 0, 1d/3d}
 			};
+		expectedResultArray = Util.transpose(expectedResultArray);
 		Tableau expectedTableau = new Tableau(expectedResultArray);
 		
-		assertEquals("Taken from book p. 115, middle tableua", expectedResultArray, tableau);
+		assertEquals("Taken from book p. 115, middle tableua", expectedTableau, tableau);
 	}
 }

@@ -108,12 +108,10 @@ public class Tableau {
 		 * a 1 and every else 0.
 		 */
 		multiplyBy(1 / tableau[pivotX][pivotY], pivotY);
-//		System.out.println(toString());
 		for (int row = 0; row < nrOfRows(); row++) {
 			if(row != pivotY){
 				addMultiple(-tableau[pivotX][row], pivotY, row);
 			}
-//			System.out.println(toString());
 		}
 	}
 	/**
@@ -131,10 +129,8 @@ public class Tableau {
 			for (int k = 0; k < indices.size(); k++) {
 				vector[k] = tableau[i][indices.get(k)];
 			}
-			System.out.println("column: "+Arrays.toString(vector));
-			System.out.println("indices: "+indices);
+			
 			List<Integer> smallest = Util.smallestIndices(vector);
-			System.out.println("Smallets: "+smallest);
 			if(smallest.size() == 1){
 				return indices.get(smallest.get(0));
 			}else{
