@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Data class to hold tableaus.
@@ -17,6 +18,10 @@ import java.util.List;
  */
 public class Tableau {
 	public double[][] tableau;
+	/**
+	 * Counts the number of pivot operations done on this tableau.
+	 */
+	public int counter =0;
 	
 	public Tableau(double[][] tableau){
 		this.tableau = tableau;
@@ -25,13 +30,32 @@ public class Tableau {
 	@Override
 	public String toString(){
 		StringBuilder sb = new StringBuilder();
+		sb.append(nrOfRows() +" " + nrOfColumns()+ "\n");
 		for (int k = 0; k < nrOfRows(); k++) {
 			for (int i = 0; i < nrOfColumns(); i++) {
-				sb.append(tableau[i][k] + "\t");
+				sb.append(tableau[i][k] + " ");
 			}
 			sb.append("\n");
 		}
 		return sb.toString();
+	}
+	/**
+	 * Creates a new random tableau with the specified properties.
+	 * 
+	 * @param bound the max and min value occuring in the created tableau
+	 */
+	public static Tableau createRandomTableau(int nrOfColumns, int nrOfRows, double bound){
+		Random r = new Random();
+		double[][] result = new double[nrOfColumns][nrOfRows];
+		for (int row = 0; row < nrOfRows; row++) {
+			for (int column = 0; column < nrOfColumns; column++) {
+				if(r.nextBoolean())
+					result[column][row]  = Math.random() * bound;
+				else
+					result[column][row]  = -Math.random() * bound;
+			}
+		}
+		return new Tableau(result);
 	}
 	@Override
 	public boolean equals(Object obj){
@@ -76,6 +100,7 @@ public class Tableau {
 	 */
 	public PivotResult pivot (){
 		checkSoundness();
+		counter++;
 		/* 
 		 * first find a variable with negative reduced costs.
 		 * If we do not find one, we already have an optimal solution
