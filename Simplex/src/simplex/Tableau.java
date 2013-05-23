@@ -22,13 +22,8 @@ public class Tableau {
 	 * Indicates the result of one pivot operation 
 	 */
 	public static enum PivotResult{OPTIMAL_ACHIEVED, INFINITE_OPTIMUM, BASIS_CHANGED}
-	/**
-	 * Indicates what kind of optimal solution the LP has 
-	 */
-	public static enum SimplexResult{FINITE_OPTIMUM, INFINITE_OPTIMUM, INFEASABLE}
-	
 	public PivotResult status;
-	public SimplexResult result;
+	public Simplex.SimplexResult result;
 	/**
 	 * Counts the number of pivot operations done on this tableau.
 	 */
@@ -37,7 +32,21 @@ public class Tableau {
 	public Tableau(double[][] tableau){
 		this.tableau = tableau;
 	}
+/**
+ * copy constructor 
+ */
+	public Tableau(Tableau t) {
+		tableau = new double[t.nrOfColumns()][t.nrOfRows()];
+		for (int i = 0; i < nrOfColumns(); i++) {
+			tableau[i] = Arrays.copyOf(t.tableau[i], tableau[i].length);
+		}
+		status = t.status;
+		result = t.result;		
+	}
 
+	public void transpose(){
+		tableau = Util.transpose(tableau);
+	}
 	/**
 	 * Creates a new random tableau with the specified properties.
 	 * 
@@ -64,6 +73,19 @@ public class Tableau {
 	private int getIndexOfFirstNegReducedCosts(){
 		for (int i = 1; i < nrOfColumns(); i++) {
 			if(Util.smaller(tableau[i][0], 0)){
+				return i;
+			}
+		}
+		return Util.NOTHING;
+	}
+	
+	/**
+	 * Returns the index of the first entry that is not 0 in the given row 
+	 * (starting from the 2nd column) 
+	 */
+	public int getIndexOfFirstNonZero(int row){
+		for (int i = 1; i < nrOfColumns(); i++) {
+			if(!Util.areEqual(tableau[i][0], 0)){
 				return i;
 			}
 		}

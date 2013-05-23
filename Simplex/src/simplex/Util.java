@@ -60,7 +60,6 @@ public class Util {
 	 * Takes a matrix and creates a new transposed version of it
 	 */
 	public static double[][] transpose(double[][]  m){
-		checkIsMatrix(m);
 		Util.checkIsMatrix(m);
 		double[][] result = new double[m[0].length][m.length];
 		for (int i = 0; i < result.length; i++) {

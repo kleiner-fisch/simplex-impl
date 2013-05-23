@@ -1,124 +1,151 @@
 package simplex;
+
 import java.util.*;
 
+import simplex.Simplex.SimplexResult;
 import simplex.Tableau.PivotResult;
 
 public class Simplex {
-	private static final PivotResult OPTIMAL_ACHIEVED = null;
-	private static final PivotResult INFINITE_OPTIMUM = null;
-	double[][] 	tabuleau = {{-11,0,-8,-21,-1,0,0,0,0},
-							{3,1,2,3,0,1,0,0,0},
-							{2,-1,2,6,0,0,1,0,0},
-							{5,0,4,9,0,0,0,1,0},
-							{1,0,0,3,1,0,0,0,1}};
-	int no_original_variables =4;
-	
 	/**
-	 * Uses the simplex algortihm to find an optimal solution for the linear progrmaming problem.
-	 * 
-	 * @param t the input tableau
-	 * @return the solved tableau. The solution 
-	 * (infeasable, infinite optimum and variable assignment of finite optimum) 
-	 * can be read from the tableau. 
+	 * Indicates what kind of optimal solution the LP has 
 	 */
-	public Tableau simplex(Tableau t){
+	public static enum SimplexResult{FINITE_OPTIMUM, INFINITE_OPTIMUM, INFEASABLE}
+
+	/**
+	 * Holds the number of artifical variables introduced in pahse 1
+	 */
+	public int noOfOrgVariables ;
+
+	/**
+	 * Uses the simplex algortihm to find an optimal solution for the linear
+	 * progrmaming problem.
+	 * 
+	 * @param t
+	 *            the input tableau
+	 * @return the solved tableau. The solution (infeasable, infinite optimum
+	 *         and variable assignment of finite optimum) can be read from the
+	 *         tableau.
+	 */
+	public Tableau simplex(Tableau t) {
 		// TODO implement
 		return null;
 	}
-	
-	public void simplex_phase_I()
-	{
-		
-		tabuleau = Util.transpose(tabuleau);
-		Tableau tabl = new Tableau(tabuleau);
-		tabl.checkSoundness();
-		int flag1 = 0;
-		int flag2 = 0;
-//		tabl.pivot();
-//		tabl.pivot();
-//		tabl.pivot();
-		
-		int i;
-			
-		while(flag1==0)
-		{
-			
-			//System.out.println(tabl);
-			if(tabl.status==PivotResult.OPTIMAL_ACHIEVED||tabl.status==PivotResult.INFINITE_OPTIMUM)      
-				
-			{
-				System.out.println(tabl.status);
-				System.out.println("Test");
-				break;
-			}
-			tabl.pivot();
+
+	public Tableau simplex_phase_I(Tableau t) {
+		t = makebPositive(t);
+		t = createAuxillaryLP(t);
+		t.pivot();
+		while(t.status == PivotResult.BASIS_CHANGED){
+			t.pivot();
 		}
-		
-		for(i=1;i<tabl.nrOfColumns();i++)
-		{
-			if(tabuleau[i][0]==0)
-			{
-				System.out.println(i);
-				
-			}
+		if(Util.smaller(t.tableau[0][0], 0)){
+			t.result = Simplex.SimplexResult.INFEASABLE;
+			return t;
 		}
+		t = removeArtVariablesFromBasis(t);
+		t = removeArtVariablesFromColumns(t);
 		
-		System.out.println(tabl);
-		List<Integer> basic_variables;
-		basic_variables = tabl.getBasicVariables();
-		System.out.println("Basic Variables");
-		System.out.println(basic_variables);
-		
-		for (i=0; i<basic_variables.size(); i++)
-	{
-			int n = basic_variables.get(i);
-		if(n > 4)
-		{
-		System.out.println(basic_variables.get(i));	
-		int basic_row = Util.isUnitVector(tabl.tabuleau[basic_variables.get(i)]);
-		System.out.println(basic_row);
-		}
+		return t;
 	}
-	
-	}
-
-	double[][] tabuleau_phaseII = {{-7,0,0,0,3,-5},
-									{0,0,1,0,7,0},
-									{2,1,0,0,-17,1},
-									{1,0,0,1,3.66,0.33}};
-	
-	
-	public void simplex_phase_II()
-	{
-		tabuleau_phaseII = Util.transpose(tabuleau_phaseII);
-		Tableau tabl = new Tableau(tabuleau_phaseII);
-		System.out.println(tabl);
-		tabl.checkSoundness();
-
-		int flag =0;
-		while(flag == 0)
-		{
-			if(tabl.status==PivotResult.OPTIMAL_ACHIEVED||tabl.status==PivotResult.INFINITE_OPTIMUM)      
-				
-			{
-				System.out.println(tabl.status);
-				System.out.println("Test");
-				break;
-			}
-			tabl.pivot();
-
+	/**
+	 * Removes the artifical variables that were added at the beginning of phase 1
+	 */
+	public Tableau removeArtVariablesFromBasis(Tableau t) {
+		Tableau result = new Tableau(t);
+		List<Integer> basicColumns = t.getBasicVariables();
+		// First we determine the artifical rows
+		List<Integer> artificalVarRows = new ArrayList<Integer>();
+		for(Integer i : basicColumns){
+			if(i > noOfOrgVariables)
+				artificalVarRows.add(Util.isUnitVector(t.tableau[i]));
 		}
-		System.out.println(tabl);
-	}
-	
-	
-	
+		// then we get the artifical rows out of the basis
+		for (Integer i : artificalVarRows) {
+			int nonZeroEntry = t.getIndexOfFirstNonZero(i);
+			if(nonZeroEntry == Util.NOTHING || nonZeroEntry > noOfOrgVariables)
+				removeRow(i, result);
+			else
+				t.changeBasis(i, nonZeroEntry);
+		}
+		return result;
 
-public static 
-void main(String[] args)
-{
-	Simplex simplex = new Simplex();
-	simplex.simplex_phase_I();
-	//simplex.print_tab();                
-}	
+	}
+	public Tableau removeArtVariablesFromColumns(Tableau t){
+		Tableau result = new Tableau(t);
+		// then we remove the columns of the artifical rows
+		double[][] array = new double[noOfOrgVariables +1][result.nrOfRows()];
+		for (int column = 0; column < noOfOrgVariables +1; column++) {
+			array[column] = Arrays.copyOf(result.tableau[column], result.nrOfRows());
+		}
+		result.tableau = array;
+		return result;
+	}
+	public void removeRow(Integer i, Tableau t) {
+		double[][] tableauArray = new double[t.nrOfColumns()][t.nrOfRows()-1];
+		int offset = 0;
+		for (int y = 0; y < t.nrOfRows() -1; y++) {
+			// skip the row to remove
+			if(y == i){
+				offset++;
+			}
+			for (int x = 0; x < t.nrOfColumns(); x++) {
+				tableauArray[x][y] = t.tableau[x][y + offset]; 
+			}
+		}
+		t.tableau = tableauArray;
+	}
+
+	/**
+	 * Create the auxillary tableau thtat has artifical variables and a new cost vector. 
+	 */
+	public Tableau createAuxillaryLP(Tableau t) {
+		noOfOrgVariables = t.nrOfColumns() - 1;
+		double[][] newArray = new double[t.nrOfColumns() + t.nrOfRows() - 1][t.nrOfRows()];
+		Tableau newTableau = new Tableau(newArray);
+		// Copy b
+		newTableau.tableau[0] = Arrays.copyOf(t.tableau[0], t.nrOfRows());
+		// copy A
+		for (int i = 1; i < noOfOrgVariables + 1; i++) {
+			newTableau.tableau[i] = Arrays.copyOf(t.tableau[i], t.nrOfRows());
+			newTableau.tableau[i][0] = 0;
+		}
+		// insert E
+		for (int i = 1; i < t.nrOfRows(); i++) {
+			newTableau.tableau[i + noOfOrgVariables ][i] = 1; 
+		}
+		// insert reduced costs and the total current costs
+		for (int x = 0; x < noOfOrgVariables +1; x++) {
+			for (int y = 1; y < t.nrOfRows(); y++) {
+				newTableau.tableau[x][0] -= t.tableau[x][y]; 
+			}
+		}
+		return newTableau;
+	}
+
+	/**
+	 * Enforces that all elements of the 0th column are >= 0, by applying 
+	 * row multiplicaitons if necessary. 
+	 */
+	public Tableau makebPositive(Tableau t) {
+		double[][] resultArray = new double[t.nrOfColumns()][t.nrOfRows()];
+		for (int i = 0; i < t.nrOfColumns(); i++) {
+			resultArray[i] = Arrays.copyOf(t.tableau[i], t.nrOfRows());
+		}
+		Tableau result = new Tableau(resultArray);
+		for (int row = 1; row < t.nrOfRows(); row++) {
+			if(Math.signum(result.tableau[0][row]) < 0){
+				result.multiplyBy(-1, row);
+			}
+		}
+		return result;
+	}
+
+	public Tableau simplex_phase_II(Tableau t) {
+		return null;
+	}
+
+	public static void main(String[] args) {
+		Simplex simplex = new Simplex();
+//		simplex.simplex_phase_I();
+	}
 }

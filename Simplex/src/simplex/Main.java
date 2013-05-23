@@ -2,7 +2,7 @@ package simplex;
 
 import java.util.Iterator;
 
-import simplex.Tableau.SimplexResult;
+import simplex.Simplex.SimplexResult;
 
 /**
  * Class used to show some example simplex runs
@@ -67,17 +67,17 @@ public class Main {
 		sb.append("The propblem ");
 		switch (t.result) {
 		case FINITE_OPTIMUM:
-			sb.append("has a "+ SimplexResult.FINITE_OPTIMUM+" at "+ t.tableau[0][0]);
+			sb.append("has a "+ Simplex.SimplexResult.FINITE_OPTIMUM+" at "+ t.tableau[0][0]);
 			sb.append("The optimal solution is ");
 			for (Double d : t.tableau[0]) {
 				sb.append(d+" ");
 			}
 			break;
 		case INFEASABLE:
-			sb.append("is "+ SimplexResult.INFEASABLE);
+			sb.append("is "+ Simplex.SimplexResult.INFEASABLE);
 			break;
 		case INFINITE_OPTIMUM:
-			sb.append("has an "+ SimplexResult.INFINITE_OPTIMUM);
+			sb.append("has an "+ Simplex.SimplexResult.INFINITE_OPTIMUM);
 			break;
 		default:
 			throw new RuntimeException();

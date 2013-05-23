@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.junit.Before;
 
+import simplex.Simplex.SimplexResult;
 import simplex.Tableau.PivotResult;
 
 
@@ -416,7 +417,6 @@ public class Test {
 	}
 	@org.junit.Test
 	public void testPivot5(){
-		ArrayExamples examples = new ArrayExamples();
 		double[][] tableauArray = examples.page115_3rd;
 		tableauArray = Util.transpose(tableauArray);
 		Tableau tableau = new Tableau(tableauArray);
@@ -436,7 +436,6 @@ public class Test {
 	}
 	@org.junit.Test
 	public void testPivot6(){
-		ArrayExamples examples = new ArrayExamples();
 		double[][] tableauArray = examples.allRedCostsNeg;
 		tableauArray = Util.transpose(tableauArray);
 		Tableau tableau = new Tableau(tableauArray);
@@ -454,11 +453,137 @@ public class Test {
 		
 		assertEquals("The optimum is -infinite, so nothing should change", expectedTableau, tableau);
 	}
+	@org.junit.Test
+	public void testRemoveRow1(){
+		double[][] tableauArray = examples.randomTableau1;
+		tableauArray = Util.transpose(tableauArray);
+		Tableau tableau = new Tableau(tableauArray);
+		
+		double[][] expectedResultArray = examples.randomTableau1_without_last_row;
+		expectedResultArray = Util.transpose(expectedResultArray);
+		Tableau expectedTableau = new Tableau(expectedResultArray);
+		
+		Simplex s = new Simplex();
+		s.removeRow(tableau.nrOfRows()-1, tableau);
+		
+		assertEquals("The last row shhould be removed", expectedTableau, tableau);
+	}
+	@org.junit.Test
+	public void testRemoveRow2(){
+		double[][] tableauArray = examples.allRedCostsNeg;
+		tableauArray = Util.transpose(tableauArray);
+		Tableau tableau = new Tableau(tableauArray);
+		System.out.println(tableau);
+		
+		double[][] expectedResultArray = examples.allRedCostsNeg_without_2nd_row;
+		expectedResultArray = Util.transpose(expectedResultArray);
+		Tableau expectedTableau = new Tableau(expectedResultArray);
+		
+		Simplex s = new Simplex();
+		s.removeRow(1, tableau);
+		System.out.println(tableau);
+		
+		assertEquals("The last row shhould be removed", expectedTableau, tableau);
+	}
+	@org.junit.Test
+	public void testIntroduceArtVariables(){
+		double[][] tableauArray = examples.page114_withoutArtificalVar;
+		tableauArray = Util.transpose(tableauArray);
+		Tableau tableau = new Tableau(tableauArray);
+		
+		Simplex s = new Simplex();
+		tableau = s.createAuxillaryLP(tableau);
+		
+		double[][] expectedResultArray = examples.page114_1st;
+		expectedResultArray = Util.transpose(expectedResultArray);
+		Tableau expectedTableau = new Tableau(expectedResultArray);
+		expectedTableau.checkSoundness();
+		
+		assertEquals("The resulting tableau after introducing art. variables", expectedTableau, tableau);
+	}
+	
+	@org.junit.Test
+	public void testMakeBPositive(){
+		double[][] tableauArray = examples.randomTableau1;
+		tableauArray = Util.transpose(tableauArray);
+		Tableau tableau = new Tableau(tableauArray);
+		
+		Simplex s = new Simplex();
+		tableau = s.makebPositive(tableau);
+		
+		double[][] expectedResultArray = examples.randomTableau2;
+		expectedResultArray = Util.transpose(expectedResultArray);
+		Tableau expectedTableau = new Tableau(expectedResultArray);
+		
+		assertEquals("The resulting tableau after making b positive", expectedTableau, tableau);
+	}
+	
+	@org.junit.Test
+	public void testRemoveArtVariables(){
+		double[][] tableauArray = examples.page115_3rd;
+		tableauArray = Util.transpose(tableauArray);
+		Tableau tableau = new Tableau(tableauArray);
+		tableau.checkSoundness();
+		
+		Simplex s = new Simplex();
+		s.noOfOrgVariables = 4;
+		tableau = s.removeArtVariablesFromBasis(tableau);
+		tableau = s.removeArtVariablesFromColumns(tableau);
+		
+		double[][] expectedResultArray = examples.page116_1st;
+		expectedResultArray = Util.transpose(expectedResultArray);
+		Tableau expectedTableau = new Tableau(expectedResultArray);
+		
+		assertEquals("Check the book", expectedTableau, tableau);
+	}
+	
+	@org.junit.Test
+	public void testSimplexPhase1(){
+		double[][] tableauArray = examples.page114_withoutArtificalVar;
+		tableauArray = Util.transpose(tableauArray);
+		Tableau tableau = new Tableau(tableauArray);
+		System.out.println("input\n"+tableau);
+		
+		Simplex s = new Simplex();
+		tableau = s.simplex_phase_I(tableau);
+		System.out.println("actual\n"+tableau);
+		
+		double[][] expectedResultArray = examples.page116_1st;
+		expectedResultArray = Util.transpose(expectedResultArray);
+		Tableau expectedTableau = new Tableau(expectedResultArray);
+		System.out.println("exptected\n"+expectedTableau);
+		
+		assertEquals("Check the book", expectedTableau, tableau);
+	}
+	
+	@org.junit.Test
+	public void testSimplex_phase_I(){
+		double[][] tableauArray = examples.infeasable;
+		tableauArray = Util.transpose(tableauArray);
+		Tableau tableau = new Tableau(tableauArray);
+		
+		Simplex s = new Simplex();
+		tableau = s.simplex_phase_I(tableau);
+		
+		assertEquals("As there are two contradictory eq. constraints the LP is infeasable",
+				Simplex.SimplexResult.INFEASABLE, tableau.result);
+	}
+	
+	ArrayExamples examples;
 	@Before
 	public void setup(){
-		
+		examples = new ArrayExamples();
 	}
 	public class ArrayExamples{
+		public final double[][] infeasable =
+			{
+			{0,   1,  1,  1,   0},
+			{3,   1,  2,  3,   0},
+			{2,   1,  2,  3,   0},
+			{2,  -1,  2,  6,   0},
+			{5,   0,  4,  9,   0},
+			{1,   0,  0,  3,   1}
+		};
 		public final double[][] allRedCostsNeg =
 			{
 			{-11, -1, -8, -21, -1, 0, 0, 0, 0},
@@ -466,6 +591,41 @@ public class Test {
 			{2,   -1,  2,  6,   0, 0, 1, 0, 0},
 			{5,   -1,  4,  9,   0, 0, 0, 1, 0},
 			{1,   -1,  0,  3,   1, 0, 0, 0, 1}
+		};
+		public final double[][] allRedCostsNeg_without_2nd_row =
+			{
+			{-11, -1, -8, -21, -1, 0, 0, 0, 0},
+			{2,   -1,  2,  6,   0, 0, 1, 0, 0},
+			{5,   -1,  4,  9,   0, 0, 0, 1, 0},
+			{1,   -1,  0,  3,   1, 0, 0, 0, 1}
+		};
+		public final double[][] randomTableau1 =
+			{
+				{-1, 1},
+				{-1, 2},
+				{-2, -2},
+				{0, -1}
+			};
+		public final double[][] randomTableau1_without_last_row =
+			{
+				{-1, 1},
+				{-1, 2},
+				{-2, -2}
+			};
+		public final double[][] randomTableau2 =
+			{
+				{-1, 1},
+				{1, -2},
+				{2, 2},
+				{0, -1}
+			};
+		public final double[][] page114_withoutArtificalVar =
+			{
+			{0,   1,  1,  1,   0},
+			{3,   1,  2,  3,   0},
+			{2,  -1,  2,  6,   0},
+			{5,   0,  4,  9,   0},
+			{1,   0,  0,  3,   1}
 		};
 		public final double[][] page114_1st =
 			{
@@ -509,6 +669,14 @@ public class Test {
 			{1d/2d, 0, 1, 0, -3d/4d, 1d/4d, 1d/4d, 0, -3d/4d},
 			{0, 0, 0, 0, 0, -1, -1, 1, 0},
 			{1d/3d, 0, 0, 1, 1d/3d, 0, 0, 0, 1d/3d}
+		};
+	
+	public final double[][] page116_1st = 
+		{
+			{0, 0, 0, 0, 0},
+			{1, 1, 0, 0, 1d/2d},
+			{1d/2d, 0, 1, 0, -3d/4d},
+			{1d/3d, 0, 0, 1, 1d/3d}
 		};
 
 }
