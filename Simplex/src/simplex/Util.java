@@ -79,16 +79,7 @@ public class Util {
 		if(m == null)
 			throw new IllegalArgumentException("Array mustn ot be null!");
 	}
-	/**
-	 * Tests if every element of the vector is >= 0
-	 */
-	public static boolean isNonPositive(double[] vector){
-		for(double v : vector){
-			if(greater(v, 0))
-				return false;
-		}
-		return true;
-	}
+
 	/**
 	 * determines the indice of the smallest value in a array, if there is such.
 	 * If there is no unique smallest value -1 is returned

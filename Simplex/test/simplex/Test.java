@@ -84,17 +84,17 @@ public class Test {
 	@org.junit.Test
 	public void testIsNonPositive1() {
 		double[] vector = {1,1,1,1};
-		assertFalse("vector is positive",Util.isNonPositive(vector));
+		assertFalse("vector is positive",Tableau.isNonPositive(vector));
 	}
 	@org.junit.Test
 	public void testIsNonPositive2() {
 		double[] vector = {-1,-1,1};
-		assertFalse("vector has positive elemtn",Util.isNonPositive(vector));
+		assertFalse("vector has positive elemtn",Tableau.isNonPositive(vector));
 	}
 	@org.junit.Test
 	public void testIsNonPositive3() {
 		double[] vector = {-1,0,0};
-		assertTrue("vector is non-positive",Util.isNonPositive(vector));
+		assertTrue("vector is non-positive",Tableau.isNonPositive(vector));
 	}
 	@org.junit.Test
 	public void testAreEqual(){
@@ -342,8 +342,8 @@ public class Test {
 	
 	@org.junit.Test
 	public void testPivot1(){
-
-		double[][] tableauArray = page115_1st; 
+		ArrayExamples examples = new ArrayExamples();
+		double[][] tableauArray = examples.page115_1st; 
 		tableauArray= Util.transpose(tableauArray);
 		Tableau tableau = new Tableau(tableauArray);
 		
@@ -351,7 +351,7 @@ public class Test {
 		assertEquals("Taken from book p. 115, top tableua",
 				PivotResult.BASIS_CHANGED, tableau.status);
 		
-		double[][] expectedResultArray = page115_2nd;
+		double[][] expectedResultArray = examples.page115_2nd;
 		expectedResultArray = Util.transpose(expectedResultArray);
 		Tableau expectedTableau = new Tableau(expectedResultArray);
 		
@@ -360,7 +360,8 @@ public class Test {
 	
 	@org.junit.Test
 	public void testPivot2(){
-		double[][] tableauArray = page115_2nd;
+		ArrayExamples examples = new ArrayExamples();
+		double[][] tableauArray = examples.page115_2nd;
 		tableauArray = Util.transpose(tableauArray);
 		Tableau tableau = new Tableau(tableauArray);
 		
@@ -368,7 +369,7 @@ public class Test {
 		assertEquals("Taken from book p. 115, middle tableua",
 				PivotResult.BASIS_CHANGED, tableau.status);
 		
-		double[][] expectedResultArray = page115_3rd;
+		double[][] expectedResultArray = examples.page115_3rd;
 		expectedResultArray = Util.transpose(expectedResultArray);
 		Tableau expectedTableau = new Tableau(expectedResultArray);
 		
@@ -377,7 +378,8 @@ public class Test {
 	
 	@org.junit.Test
 	public void testPivot3(){
-		double[][] tableauArray = page114_1st;
+		ArrayExamples examples = new ArrayExamples();
+		double[][] tableauArray = examples.page114_1st;
 		tableauArray = Util.transpose(tableauArray);
 		Tableau tableau = new Tableau(tableauArray);
 		tableau.checkSoundness();
@@ -386,7 +388,7 @@ public class Test {
 		assertEquals("Taken from book p. 114, top tabl.",
 				PivotResult.BASIS_CHANGED, tableau.status);
 		
-		double[][] expectedResultArray = page114_2nd;
+		double[][] expectedResultArray = examples.page114_2nd;
 		expectedResultArray = Util.transpose(expectedResultArray);
 		Tableau expectedTableau = new Tableau(expectedResultArray);
 		expectedTableau.checkSoundness();
@@ -395,7 +397,8 @@ public class Test {
 	}
 	@org.junit.Test
 	public void testPivot4(){
-		double[][] tableauArray = page114_2nd;
+		ArrayExamples examples = new ArrayExamples();
+		double[][] tableauArray = examples.page114_2nd;
 		tableauArray = Util.transpose(tableauArray);
 		Tableau tableau = new Tableau(tableauArray);
 		tableau.checkSoundness();
@@ -404,21 +407,86 @@ public class Test {
 		assertEquals("Taken from book p. 114, bot. tabl.",
 				PivotResult.BASIS_CHANGED, tableau.status);
 		
-		double[][] expectedResultArray = page115_1st;
+		double[][] expectedResultArray = examples.page115_1st;
 		expectedResultArray = Util.transpose(expectedResultArray);
 		Tableau expectedTableau = new Tableau(expectedResultArray);
 		expectedTableau.checkSoundness();
 		
 		assertEquals("Taken from book p. 115, top tableua", expectedTableau, tableau);
 	}
+	@org.junit.Test
+	public void testPivot5(){
+		ArrayExamples examples = new ArrayExamples();
+		double[][] tableauArray = examples.page115_3rd;
+		tableauArray = Util.transpose(tableauArray);
+		Tableau tableau = new Tableau(tableauArray);
+		tableau.checkSoundness();
+		
+		tableau.pivot();
+		assertEquals("Taken from book p. 115, bot. tabl. " +
+				"There are no variables with neg. reduced costs.",
+				PivotResult.OPTIMAL_ACHIEVED, tableau.status);
+		
+		double[][] expectedResultArray = examples.page115_3rd;
+		expectedResultArray = Util.transpose(expectedResultArray);
+		Tableau expectedTableau = new Tableau(expectedResultArray);
+		expectedTableau.checkSoundness();
+		
+		assertEquals("As we achieved the optimum nothing should change", expectedTableau, tableau);
+	}
+	@org.junit.Test
+	public void testPivot6(){
+		ArrayExamples examples = new ArrayExamples();
+		double[][] tableauArray = examples.allRedCostsNeg;
+		tableauArray = Util.transpose(tableauArray);
+		Tableau tableau = new Tableau(tableauArray);
+		tableau.checkSoundness();
+		
+		tableau.pivot(1, 3);
+		assertEquals("All reduced costs are negative." +
+				"So the optimum is -infinite",
+				PivotResult.INFINITE_OPTIMUM, tableau.status);
+		
+		double[][] expectedResultArray = examples.allRedCostsNeg;
+		expectedResultArray = Util.transpose(expectedResultArray);
+		Tableau expectedTableau = new Tableau(expectedResultArray);
+		expectedTableau.checkSoundness();
+		
+		assertEquals("The optimum is -infinite, so nothing should change", expectedTableau, tableau);
+	}
 	@Before
 	public void setup(){
 		
 	}
+	public class ArrayExamples{
+		public final double[][] allRedCostsNeg =
+			{
+			{-11, -1, -8, -21, -1, 0, 0, 0, 0},
+			{3,   -1,  2,  3,   0, 1, 0, 0, 0},
+			{2,   -1,  2,  6,   0, 0, 1, 0, 0},
+			{5,   -1,  4,  9,   0, 0, 0, 1, 0},
+			{1,   -1,  0,  3,   1, 0, 0, 0, 1}
+		};
+		public final double[][] page114_1st =
+			{
+			{-11, 0, -8, -21, -1, 0, 0, 0, 0},
+			{3,   1,  2,  3,   0, 1, 0, 0, 0},
+			{2,  -1,  2,  6,   0, 0, 1, 0, 0},
+			{5,   0,  4,  9,   0, 0, 0, 1, 0},
+			{1,   0,  0,  3,   1, 0, 0, 0, 1}
+		};
+		public final double[][] page114_2nd =
+			{
+			{-10, 0, -8, -18, 0, 0, 0, 0, 1},
+			{3, 1, 2, 3, 0, 1, 0, 0, 0},
+			{2, -1, 2, 6, 0, 0, 1, 0, 0},
+			{5, 0, 4, 9, 0, 0, 0, 1, 0},
+			{1, 0, 0, 3, 1, 0, 0, 0, 1}
+		};
 	/**
 	 * These arrays are taken from the book
 	 */
-	public static final double[][] page115_1st = 
+	public final double[][] page115_1st = 
 		{
 			{-4 ,0 ,-8,0,6,0 ,0,0  ,7  },
 			{2  ,1 ,2 ,0,-1  ,1,0,0,-1 },
@@ -426,7 +494,7 @@ public class Test {
 			{2  , 0,4 ,0,-3,0,0,1  ,-3 },
 			{1d/3d, 0, 0,1, 1d/3d,0,0,0,1d/3d}
 		};
-	public static final double[][] page115_2nd = 
+	public final double[][] page115_2nd = 
 		{
 			{-4, -4, 0, 0, -2, 0, 4, 0, -1},
 			{2, 2, 0, 0, 1, 1, -1, 0, 1},
@@ -434,7 +502,7 @@ public class Test {
 			{2, 2, 0, 0, 1, 0, -2, 1, 1},
 			{1d/3d, 0, 0, 1, 1d/3d, 0, 0, 0, 1d/3d}
 		};
-	public static final double[][] page115_3rd = 
+	public final double[][] page115_3rd = 
 		{
 			{0, 0, 0, 0, 0, 2, 2, 0, 1},
 			{1, 1, 0, 0, 1d/2d, 1d/2d, -1d/2d, 0, 1d/2d},
@@ -442,20 +510,6 @@ public class Test {
 			{0, 0, 0, 0, 0, -1, -1, 1, 0},
 			{1d/3d, 0, 0, 1, 1d/3d, 0, 0, 0, 1d/3d}
 		};
-	public static final double[][] page114_1st =
-		{
-		{-11, 0, -8, -21, -1, 0, 0, 0, 0},
-		{3,   1,  2,  3,   0, 1, 0, 0, 0},
-		{2,  -1,  2,  6,   0, 0, 1, 0, 0},
-		{5,   0,  4,  9,   0, 0, 0, 1, 0},
-		{1,   0,  0,  3,   1, 0, 0, 0, 1}
-	};
-	public static final double[][] page114_2nd =
-		{
-		{-10, 0, -8, -18, 0, 0, 0, 0, 1},
-		{3, 1, 2, 3, 0, 1, 0, 0, 0},
-		{2, -1, 2, 6, 0, 0, 1, 0, 0},
-		{5, 0, 4, 9, 0, 0, 0, 1, 0},
-		{1, 0, 0, 3, 1, 0, 0, 0, 1}
-	};
+
+}
 }

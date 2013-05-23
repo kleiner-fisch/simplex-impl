@@ -70,11 +70,9 @@ public class Tableau {
 		return Util.NOTHING;
 	}
 	
-//	private void checkIsCorrectPivot(int x, int y){
-//		if(x == y)
-//			throw new IllegalArgumentException("");
-//		if()
-//	}
+	private void checkIsCorrectPivot(int x, int y){
+		//TODO implement
+	}
 	/**
 	 * Performs a pivot operation. This means it tries to decrease te cost function.
 	 * The result can be 
@@ -86,23 +84,17 @@ public class Tableau {
  	 * @param y
 	 */
 	public void pivot (int x, int y){
-//		checkIsCorrectPivot(x, y);
+		checkIsCorrectPivot(x, y);
 		checkSoundness();
 		pivotCounter++;
-		/* 
-		 * first find a variable with negative reduced costs.
-		 * If we do not find one, we already have an optimal solution
-		 */
 		
-		if(y == Util.NOTHING){
-			status = PivotResult.OPTIMAL_ACHIEVED;
-			return;
-		}
+		if(Util.geq(tableau[x][0], 0))
+			throw new IllegalArgumentException("Reduced cost is not negative!");
 		/*
 		 * Then if the j'th variable has column vector <= 0 the optimal cost is
 		 * -infinite and we terminate.
 		 */
-		if(Util.isNonPositive(tableau[y])){
+		if(Tableau.isNonPositive(tableau[x])){
 			status = PivotResult.INFINITE_OPTIMUM;
 			return;
 		}
@@ -110,6 +102,18 @@ public class Tableau {
 		changeBasis(x, y);
 		status = PivotResult.BASIS_CHANGED;
 	}
+	
+	/**
+	 * Tests if every element of the vector is >= 0
+	 */
+	public static boolean isNonPositive(double[] vector){
+		for (int i = 1; i < vector.length; i++) {
+			if(Util.greater(vector[i], 0))
+				return false;
+		}
+		return true;
+	}
+	
 	/**
 	 * Performs a pivot operation. This means it tries to decrease te cost function.
 	 * The result can be 
@@ -127,7 +131,7 @@ public class Tableau {
 			status = PivotResult.OPTIMAL_ACHIEVED;
 			return;
 		}
-		if(Util.isNonPositive(tableau[enteringVariable])){
+		if(Tableau.isNonPositive(tableau[enteringVariable])){
 			status = PivotResult.INFINITE_OPTIMUM;
 			return;
 		}
