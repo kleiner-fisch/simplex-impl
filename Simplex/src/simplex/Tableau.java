@@ -69,6 +69,47 @@ public class Tableau {
 		}
 		return Util.NOTHING;
 	}
+	
+//	private void checkIsCorrectPivot(int x, int y){
+//		if(x == y)
+//			throw new IllegalArgumentException("");
+//		if()
+//	}
+	/**
+	 * Performs a pivot operation. This means it tries to decrease te cost function.
+	 * The result can be 
+	 * 	- The tableau is optimal
+	 *  - The optimal cost is -infinity
+	 *  - The cost is decreased by a change of basis represented in the tableau. 
+	 *
+	 * @param x the coordinates of the pivot elemnt
+ 	 * @param y
+	 */
+	public void pivot (int x, int y){
+//		checkIsCorrectPivot(x, y);
+		checkSoundness();
+		pivotCounter++;
+		/* 
+		 * first find a variable with negative reduced costs.
+		 * If we do not find one, we already have an optimal solution
+		 */
+		
+		if(y == Util.NOTHING){
+			status = PivotResult.OPTIMAL_ACHIEVED;
+			return;
+		}
+		/*
+		 * Then if the j'th variable has column vector <= 0 the optimal cost is
+		 * -infinite and we terminate.
+		 */
+		if(Util.isNonPositive(tableau[y])){
+			status = PivotResult.INFINITE_OPTIMUM;
+			return;
+		}
+		
+		changeBasis(x, y);
+		status = PivotResult.BASIS_CHANGED;
+	}
 	/**
 	 * Performs a pivot operation. This means it tries to decrease te cost function.
 	 * The result can be 
@@ -77,22 +118,11 @@ public class Tableau {
 	 *  - The cost is decreased by a change of basis represented in the tableau. 
 	 */
 	public void pivot (){
-		checkSoundness();
-		pivotCounter++;
 		/* 
 		 * first find a variable with negative reduced costs.
 		 * If we do not find one, we already have an optimal solution
 		 */
 		int enteringVariable = getIndexOfFirstNegReducedCosts();
-		if(enteringVariable == Util.NOTHING)
-			status = PivotResult.OPTIMAL_ACHIEVED;
-		/*
-		 * Then if the j'th variable has column vector <= 0 the optimal cost is
-		 * -infinite and we terminate.
-		 */
-		if(Util.isNonPositive(tableau[enteringVariable]))
-			status = PivotResult.INFINITE_OPTIMUM;
-
 		/*
 		 * Then we collect all rows that have a ratio equal to the minRatio
 		 * And determine the lex-smallest of those rows.
@@ -101,9 +131,8 @@ public class Tableau {
 //		List<Integer> minRatioRows = getMinRatioRows(minRatio, enteringVariable);
 //		int leavingVariable = getLexSmallestRow(minRatioRows);
 		int leavingVariable = getSmallestIndexOfMinRatio(minRatio, enteringVariable);
-		changeBasis(enteringVariable, leavingVariable);
 		
-		status = PivotResult.BASIS_CHANGED;
+		pivot(enteringVariable, leavingVariable);
 	}
 	/**
 	 * Turns the given column into a unit-vector (with first element of column = 0),
