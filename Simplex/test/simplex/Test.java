@@ -375,41 +375,42 @@ public class Test {
 		assertEquals("Taken from book p. 115, bottom tableua", expectedTableau, tableau);
 	}
 	
-//	@org.junit.Test
-//	public void testPivot2(){
-//		double[][] tableauArray = 
-//			{
-//				{3 ,0 ,0,-2,18,1 ,1,0},
-//				{0,1,0,8,-84,-12,8,0},
-//				{0,0,1,3d/8d,-15d/4d,-1d/2,1d/4d,0},
-//				{1,0,0,1,0,0,0,1}
-//			};
-//		tableauArray = Util.transpose(tableauArray);
-//		Tableau tableau = new Tableau(tableauArray);
-//		tableau.checkSoundness();
-//		System.out.println(tableau);
-//		System.out.println();
-//		
-//		assertEquals("Taken from book p. 104",
-//				PivotResult.BASIS_CHANGED,tableau.pivot());
-//		System.out.println(tableau);
-//		System.out.println();
-//		
-//		double[][] expectedResultArray = 
-//			{
-//				{3,1d/4d,0,0,-3,-2,3,0},
-//				{0,1d/8d,0,1,-21d/2d,-3d/2d,1,0},
-//				{0,-3d/64d,1,0,3d/16d,1d/16d,-1d/8d,0},
-//				{1,-1d/8d,0,0,21d/2d,3d/2d,-1,1}
-//			};
-//		expectedResultArray = Util.transpose(expectedResultArray);
-//		Tableau expectedTableau = new Tableau(expectedResultArray);
-//		expectedTableau.checkSoundness();
-//		System.out.println(expectedTableau);
-//		System.out.println();
-//		
-//		assertEquals("Taken from book p. 104, middle tableua", expectedTableau, tableau);
-//	}
+	@org.junit.Test
+	public void testPivot3(){
+		double[][] tableauArray = page114_1st;
+		tableauArray = Util.transpose(tableauArray);
+		Tableau tableau = new Tableau(tableauArray);
+		tableau.checkSoundness();
+		
+		tableau.pivot(4, 4);
+		assertEquals("Taken from book p. 114, top tabl.",
+				PivotResult.BASIS_CHANGED, tableau.status);
+		
+		double[][] expectedResultArray = page114_2nd;
+		expectedResultArray = Util.transpose(expectedResultArray);
+		Tableau expectedTableau = new Tableau(expectedResultArray);
+		expectedTableau.checkSoundness();
+		
+		assertEquals("Taken from book p. 1154, bottom tableua", expectedTableau, tableau);
+	}
+	@org.junit.Test
+	public void testPivot4(){
+		double[][] tableauArray = page114_2nd;
+		tableauArray = Util.transpose(tableauArray);
+		Tableau tableau = new Tableau(tableauArray);
+		tableau.checkSoundness();
+		
+		tableau.pivot(3, 4);
+		assertEquals("Taken from book p. 114, bot. tabl.",
+				PivotResult.BASIS_CHANGED, tableau.status);
+		
+		double[][] expectedResultArray = page115_1st;
+		expectedResultArray = Util.transpose(expectedResultArray);
+		Tableau expectedTableau = new Tableau(expectedResultArray);
+		expectedTableau.checkSoundness();
+		
+		assertEquals("Taken from book p. 115, top tableua", expectedTableau, tableau);
+	}
 	@Before
 	public void setup(){
 		
@@ -441,4 +442,20 @@ public class Test {
 			{0, 0, 0, 0, 0, -1, -1, 1, 0},
 			{1d/3d, 0, 0, 1, 1d/3d, 0, 0, 0, 1d/3d}
 		};
+	public static final double[][] page114_1st =
+		{
+		{-11, 0, -8, -21, -1, 0, 0, 0, 0},
+		{3,   1,  2,  3,   0, 1, 0, 0, 0},
+		{2,  -1,  2,  6,   0, 0, 1, 0, 0},
+		{5,   0,  4,  9,   0, 0, 0, 1, 0},
+		{1,   0,  0,  3,   1, 0, 0, 0, 1}
+	};
+	public static final double[][] page114_2nd =
+		{
+		{-10, 0, -8, -18, 0, 0, 0, 0, 1},
+		{3, 1, 2, 3, 0, 1, 0, 0, 0},
+		{2, -1, 2, 6, 0, 0, 1, 0, 0},
+		{5, 0, 4, 9, 0, 0, 0, 1, 0},
+		{1, 0, 0, 3, 1, 0, 0, 0, 1}
+	};
 }
