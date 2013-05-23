@@ -123,6 +123,14 @@ public class Tableau {
 		 * If we do not find one, we already have an optimal solution
 		 */
 		int enteringVariable = getIndexOfFirstNegReducedCosts();
+		if(enteringVariable == Util.NOTHING){
+			status = PivotResult.OPTIMAL_ACHIEVED;
+			return;
+		}
+		if(Util.isNonPositive(tableau[enteringVariable])){
+			status = PivotResult.INFINITE_OPTIMUM;
+			return;
+		}
 		/*
 		 * Then we collect all rows that have a ratio equal to the minRatio
 		 * And determine the lex-smallest of those rows.
