@@ -2,8 +2,11 @@ package simplex;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -32,6 +35,8 @@ public class Tableau {
 	public Tableau(double[][] tableau){
 		this.tableau = tableau;
 	}
+	
+	public Map<Integer, Integer> basicVarRowToColumn = new HashMap<Integer, Integer>();
 /**
  * copy constructor 
  */
@@ -42,6 +47,8 @@ public class Tableau {
 		}
 		status = t.status;
 		result = t.result;		
+		for(Integer i : t.basicVarRowToColumn.keySet())
+			basicVarRowToColumn.put(i, t.basicVarRowToColumn.get(i));
 	}
 
 	public void transpose(){
@@ -92,9 +99,6 @@ public class Tableau {
 		return Util.NOTHING;
 	}
 	
-	private void checkIsCorrectPivot(int x, int y){
-		//TODO implement
-	}
 	/**
 	 * Performs a pivot operation. This means it tries to decrease te cost function.
 	 * The result can be 
@@ -106,7 +110,6 @@ public class Tableau {
  	 * @param y
 	 */
 	public void pivot (int x, int y){
-		checkIsCorrectPivot(x, y);
 		checkSoundness();
 		pivotCounter++;
 		
@@ -180,6 +183,7 @@ public class Tableau {
 		 * Make it such, that the column j has at row i ((j,i) is pivot element) 
 		 * a 1 and every else 0.
 		 */
+		basicVarRowToColumn.put(pivotX, pivotY);
 		multiplyBy(1 / tableau[pivotX][pivotY], pivotY);
 		for (int row = 0; row < nrOfRows(); row++) {
 			if(row != pivotY){
@@ -357,7 +361,8 @@ public class Tableau {
 		sb.append(nrOfRows() +" " + nrOfColumns()+ "\n");
 		for (int k = 0; k < nrOfRows(); k++) {
 			for (int i = 0; i < nrOfColumns(); i++) {
-				sb.append(tableau[i][k] + " ");
+				double rounded = Math.floor(tableau[i][k] * 10) / 10;
+				sb.append(rounded + " ");
 			}
 			sb.append("\n");
 		}

@@ -6,11 +6,12 @@ import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Before;
 
-import simplex.Simplex.SimplexResult;
 import simplex.Tableau.PivotResult;
 
 
@@ -380,7 +381,7 @@ public class Test {
 	@org.junit.Test
 	public void testPivot3(){
 		ArrayExamples examples = new ArrayExamples();
-		double[][] tableauArray = examples.page114_1st;
+		double[][] tableauArray = examples.page114_3rd;
 		tableauArray = Util.transpose(tableauArray);
 		Tableau tableau = new Tableau(tableauArray);
 		tableau.checkSoundness();
@@ -389,7 +390,7 @@ public class Test {
 		assertEquals("Taken from book p. 114, top tabl.",
 				PivotResult.BASIS_CHANGED, tableau.status);
 		
-		double[][] expectedResultArray = examples.page114_2nd;
+		double[][] expectedResultArray = examples.page114_4th;
 		expectedResultArray = Util.transpose(expectedResultArray);
 		Tableau expectedTableau = new Tableau(expectedResultArray);
 		expectedTableau.checkSoundness();
@@ -399,7 +400,7 @@ public class Test {
 	@org.junit.Test
 	public void testPivot4(){
 		ArrayExamples examples = new ArrayExamples();
-		double[][] tableauArray = examples.page114_2nd;
+		double[][] tableauArray = examples.page114_4th;
 		tableauArray = Util.transpose(tableauArray);
 		Tableau tableau = new Tableau(tableauArray);
 		tableau.checkSoundness();
@@ -487,18 +488,24 @@ public class Test {
 	}
 	@org.junit.Test
 	public void testIntroduceArtVariables(){
-		double[][] tableauArray = examples.page114_withoutArtificalVar;
+		double[][] tableauArray = examples.page114_1st;
 		tableauArray = Util.transpose(tableauArray);
 		Tableau tableau = new Tableau(tableauArray);
 		
 		Simplex s = new Simplex();
 		tableau = s.createAuxillaryLP(tableau);
 		
-		double[][] expectedResultArray = examples.page114_1st;
+		double[][] expectedResultArray = examples.page114_3rd;
 		expectedResultArray = Util.transpose(expectedResultArray);
 		Tableau expectedTableau = new Tableau(expectedResultArray);
 		expectedTableau.checkSoundness();
 		
+		Map<Integer, Integer> expectedMap = new HashMap<Integer, Integer>();
+		for (int i = 1; i < 5; i++) {
+			expectedMap.put(i, i+4);
+		}
+		
+		assertEquals(expectedMap, tableau.basicVarRowToColumn);
 		assertEquals("The resulting tableau after introducing art. variables", expectedTableau, tableau);
 	}
 	
@@ -524,6 +531,12 @@ public class Test {
 		tableauArray = Util.transpose(tableauArray);
 		Tableau tableau = new Tableau(tableauArray);
 		tableau.checkSoundness();
+		Map<Integer, Integer> map= new HashMap<Integer, Integer>();
+		map.put(1, 1);
+		map.put(2, 2);
+		map.put(3, 7);
+		map.put(4, 3);
+		tableau.basicVarRowToColumn = map;
 		
 		Simplex s = new Simplex();
 		s.noOfOrgVariables = 4;
@@ -534,24 +547,83 @@ public class Test {
 		expectedResultArray = Util.transpose(expectedResultArray);
 		Tableau expectedTableau = new Tableau(expectedResultArray);
 		
+		Map<Integer, Integer> expectedMap = new HashMap<Integer, Integer>();
+		for (int i = 1; i < 4; i++) {
+			expectedMap.put(i, i);
+		}
+		
+		assertEquals(expectedMap, tableau.basicVarRowToColumn);
 		assertEquals("Check the book", expectedTableau, tableau);
 	}
 	
 	@org.junit.Test
+	public void testGetBasicCosts(){
+		double[][] tableauArray = examples.page114_1st;
+		tableauArray = Util.transpose(tableauArray);
+		Tableau inputTableau = new Tableau(tableauArray);
+		
+		double[][] finalTableauArray = examples.page116_1st;
+		finalTableauArray = Util.transpose(finalTableauArray);
+		Tableau finalTableau = new Tableau(finalTableauArray);
+		
+		Map<Integer, Integer> finalMap = new HashMap<Integer, Integer>();
+		for (int i = 1; i < 4; i++) {
+			finalMap.put(i, i);
+		}
+		finalTableau.basicVarRowToColumn = finalMap;
+		
+		Simplex s = new Simplex();
+		s.inputTableau = inputTableau;
+		s.noOfOrgVariables = 4;
+		
+		double[] expectedBasicCosts = {1,1,1};
+		
+		double[] basicCosts = s.getBasicCosts(finalTableau);
+		
+		assertTrue(Arrays.equals(expectedBasicCosts, basicCosts));
+	}
+	@org.junit.Test
+	public void testComputeCosts(){
+		double[][] inputTableauArray = examples.page114_2nd;
+		inputTableauArray = Util.transpose(inputTableauArray);
+		Tableau inputTableau = new Tableau(inputTableauArray);
+		
+		double[][] tableauArray = examples.page115_2nd_without_costs;
+		tableauArray = Util.transpose(tableauArray);
+		Tableau t = new Tableau(tableauArray);
+		
+		Map<Integer, Integer> map = new HashMap<Integer, Integer>();
+		map.put(1, 6);
+		map.put(2, 2);
+		map.put(3, 7);
+		map.put(4, 3);
+		
+		t.basicVarRowToColumn = map;
+		
+		Simplex s = new Simplex();
+		s.inputTableau = inputTableau;
+		s.noOfOrgVariables = 4;
+		
+		s.computeCosts(t);
+		
+		double[][] expectedResultArray = examples.page115_2nd;
+		expectedResultArray = Util.transpose(expectedResultArray);
+		Tableau expectedTableau = new Tableau(expectedResultArray);
+		
+		assertEquals(expectedTableau, t);
+	}
+	@org.junit.Test
 	public void testSimplexPhase1(){
-		double[][] tableauArray = examples.page114_withoutArtificalVar;
+		double[][] tableauArray = examples.page114_1st;
 		tableauArray = Util.transpose(tableauArray);
 		Tableau tableau = new Tableau(tableauArray);
-		System.out.println("input\n"+tableau);
 		
 		Simplex s = new Simplex();
 		tableau = s.simplex_phase_I(tableau);
-		System.out.println("actual\n"+tableau);
 		
 		double[][] expectedResultArray = examples.page116_1st;
 		expectedResultArray = Util.transpose(expectedResultArray);
 		Tableau expectedTableau = new Tableau(expectedResultArray);
-		System.out.println("exptected\n"+expectedTableau);
 		
 		assertEquals("Check the book", expectedTableau, tableau);
 	}
@@ -574,110 +646,5 @@ public class Test {
 	public void setup(){
 		examples = new ArrayExamples();
 	}
-	public class ArrayExamples{
-		public final double[][] infeasable =
-			{
-			{0,   1,  1,  1,   0},
-			{3,   1,  2,  3,   0},
-			{2,   1,  2,  3,   0},
-			{2,  -1,  2,  6,   0},
-			{5,   0,  4,  9,   0},
-			{1,   0,  0,  3,   1}
-		};
-		public final double[][] allRedCostsNeg =
-			{
-			{-11, -1, -8, -21, -1, 0, 0, 0, 0},
-			{3,   -1,  2,  3,   0, 1, 0, 0, 0},
-			{2,   -1,  2,  6,   0, 0, 1, 0, 0},
-			{5,   -1,  4,  9,   0, 0, 0, 1, 0},
-			{1,   -1,  0,  3,   1, 0, 0, 0, 1}
-		};
-		public final double[][] allRedCostsNeg_without_2nd_row =
-			{
-			{-11, -1, -8, -21, -1, 0, 0, 0, 0},
-			{2,   -1,  2,  6,   0, 0, 1, 0, 0},
-			{5,   -1,  4,  9,   0, 0, 0, 1, 0},
-			{1,   -1,  0,  3,   1, 0, 0, 0, 1}
-		};
-		public final double[][] randomTableau1 =
-			{
-				{-1, 1},
-				{-1, 2},
-				{-2, -2},
-				{0, -1}
-			};
-		public final double[][] randomTableau1_without_last_row =
-			{
-				{-1, 1},
-				{-1, 2},
-				{-2, -2}
-			};
-		public final double[][] randomTableau2 =
-			{
-				{-1, 1},
-				{1, -2},
-				{2, 2},
-				{0, -1}
-			};
-		public final double[][] page114_withoutArtificalVar =
-			{
-			{0,   1,  1,  1,   0},
-			{3,   1,  2,  3,   0},
-			{2,  -1,  2,  6,   0},
-			{5,   0,  4,  9,   0},
-			{1,   0,  0,  3,   1}
-		};
-		public final double[][] page114_1st =
-			{
-			{-11, 0, -8, -21, -1, 0, 0, 0, 0},
-			{3,   1,  2,  3,   0, 1, 0, 0, 0},
-			{2,  -1,  2,  6,   0, 0, 1, 0, 0},
-			{5,   0,  4,  9,   0, 0, 0, 1, 0},
-			{1,   0,  0,  3,   1, 0, 0, 0, 1}
-		};
-		public final double[][] page114_2nd =
-			{
-			{-10, 0, -8, -18, 0, 0, 0, 0, 1},
-			{3, 1, 2, 3, 0, 1, 0, 0, 0},
-			{2, -1, 2, 6, 0, 0, 1, 0, 0},
-			{5, 0, 4, 9, 0, 0, 0, 1, 0},
-			{1, 0, 0, 3, 1, 0, 0, 0, 1}
-		};
-	/**
-	 * These arrays are taken from the book
-	 */
-	public final double[][] page115_1st = 
-		{
-			{-4 ,0 ,-8,0,6,0 ,0,0  ,7  },
-			{2  ,1 ,2 ,0,-1  ,1,0,0,-1 },
-			{0  ,-1,2 ,0,-2,0,1,0  ,-2 },
-			{2  , 0,4 ,0,-3,0,0,1  ,-3 },
-			{1d/3d, 0, 0,1, 1d/3d,0,0,0,1d/3d}
-		};
-	public final double[][] page115_2nd = 
-		{
-			{-4, -4, 0, 0, -2, 0, 4, 0, -1},
-			{2, 2, 0, 0, 1, 1, -1, 0, 1},
-			{0, -1d/2d, 1, 0, -1, 0, 1d/2d, 0, -1},
-			{2, 2, 0, 0, 1, 0, -2, 1, 1},
-			{1d/3d, 0, 0, 1, 1d/3d, 0, 0, 0, 1d/3d}
-		};
-	public final double[][] page115_3rd = 
-		{
-			{0, 0, 0, 0, 0, 2, 2, 0, 1},
-			{1, 1, 0, 0, 1d/2d, 1d/2d, -1d/2d, 0, 1d/2d},
-			{1d/2d, 0, 1, 0, -3d/4d, 1d/4d, 1d/4d, 0, -3d/4d},
-			{0, 0, 0, 0, 0, -1, -1, 1, 0},
-			{1d/3d, 0, 0, 1, 1d/3d, 0, 0, 0, 1d/3d}
-		};
 	
-	public final double[][] page116_1st = 
-		{
-			{0, 0, 0, 0, 0},
-			{1, 1, 0, 0, 1d/2d},
-			{1d/2d, 0, 1, 0, -3d/4d},
-			{1d/3d, 0, 0, 1, 1d/3d}
-		};
-
-}
 }
